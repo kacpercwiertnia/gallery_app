@@ -50,6 +50,7 @@ public class ThumbnailService {
             }
         }
     }
+
     private byte[] scaleImage(byte[] image, int size) throws IOException {
         ByteArrayInputStream inStream = new ByteArrayInputStream(image);
         BufferedImage imageFromByteArray = ImageIO.read(inStream);
