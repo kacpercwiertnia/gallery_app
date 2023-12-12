@@ -16,6 +16,6 @@ public class ResizeImageScheduler {
 
     @Scheduled(fixedDelay = 2000L)
     public void resize(){
-        thumbnailService.test();
+        thumbnailService.resizeImageFromQueue();
     }
 }
