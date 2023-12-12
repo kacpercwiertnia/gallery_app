@@ -49,7 +49,6 @@ public class ThumbnailService {
                 System.out.println("Operation failed for image with ID: " + image.getImageId() + " and size: " + size);
             }
         }
-
     }
     private byte[] scaleImage(byte[] image, int size) throws IOException {
         ByteArrayInputStream inStream = new ByteArrayInputStream(image);
