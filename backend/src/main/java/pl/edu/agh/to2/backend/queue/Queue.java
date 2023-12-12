@@ -11,9 +11,9 @@ import java.util.List;
 public class Queue {
     @Id
     @GeneratedValue
-    private int item_id;
+    private int itemId;
     private ThumbnailSize size;
-    @ManyToOne
+    @OneToOne
     private Image image;
 
     public Queue(ThumbnailSize size, Image image){
@@ -24,8 +24,8 @@ public class Queue {
     public Queue(){
     }
 
-    public int getItem_id(){
-        return item_id;
+    public int getItemId(){
+        return itemId;
     }
 
     public ThumbnailSize getSize() {

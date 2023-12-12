@@ -10,7 +10,7 @@ import pl.edu.agh.to2.backend.image.Image;
 public class Thumbnail {
     @Id
     @GeneratedValue
-    private int item_id;
+    private int thumbnailId;
     private byte[] source;
     private ThumbnailSize size;
     @ManyToOne
@@ -25,8 +25,8 @@ public class Thumbnail {
     public Thumbnail(){
     }
 
-    public int getItem_id(){
-        return item_id;
+    public int getThumbnailId(){
+        return thumbnailId;
     }
 
     public byte[] getSource() {
