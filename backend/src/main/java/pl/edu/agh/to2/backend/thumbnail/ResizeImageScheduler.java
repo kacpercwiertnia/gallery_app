@@ -10,11 +10,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 @EnableScheduling
 public class ResizeImageScheduler {
     private ThumbnailService thumbnailService;
-    public ResizeImageScheduler(ThumbnailService service){
+
+    public ResizeImageScheduler(ThumbnailService service) {
         thumbnailService = service;
     }
+
     @Scheduled(fixedDelay = 2000L)
-    public void resize(){
+    public void resize() {
         thumbnailService.resizeImageFromQueue();
     }
 }
