@@ -22,5 +22,5 @@
 ### API
 Our application use 2 endpoints for communication: 
 - */image/post_image* which accepts image encoded in Base64
-- */image/get_images/{size}* which returns list of encoded in Base64 images
+- */thumbnails/get_thumbnails* which takes request with payload {size:"small"|"medium"|"large"} returns list of encoded in Base64 images
 
