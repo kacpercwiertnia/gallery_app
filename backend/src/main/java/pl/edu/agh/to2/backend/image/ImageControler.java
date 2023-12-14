@@ -16,23 +16,10 @@ import java.util.List;
 @RequestMapping("/image")
 public class ImageControler {
     private ImageService imageService;
-    private ThumbnailService thumbnailService;
 
-    public ImageControler(ImageService imageService, ThumbnailService thumbnailService) {
-        this.thumbnailService = thumbnailService;
+
+    public ImageControler(ImageService imageService) {
         this.imageService = imageService;
-    }
-
-    @GetMapping(value = "/get_images/{size}")
-    public ResponseEntity getImages(@PathVariable String size) {
-        try {
-            List<String> base64Images = thumbnailService.getThumbnailsBySize(size);
-            GetResponse response = new GetResponse(base64Images);
-            return ResponseEntity.ok().body(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
-
     }
 
     @PostMapping("/post_image")

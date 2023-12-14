@@ -1,4 +1,4 @@
-package pl.edu.agh.to2.backend.image;
+package pl.edu.agh.to2.backend.rest;
 
 import java.io.Serializable;
 import java.util.List;
