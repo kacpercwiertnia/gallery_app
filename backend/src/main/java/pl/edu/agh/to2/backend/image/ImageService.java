@@ -17,7 +17,6 @@ public class ImageService {
 
     public void addNewImage(String encodedImage) {
         byte[] byteImage = Base64.getDecoder().decode(encodedImage);
-        System.out.println(byteImage.length);
         Image image = new Image(byteImage, 2137);
         imageRepository.save(image);
         queueService.queueImages(image);
