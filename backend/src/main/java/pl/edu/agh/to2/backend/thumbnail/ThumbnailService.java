@@ -33,6 +33,7 @@ public class ThumbnailService {
             System.out.println("No records"); //maybe just custom exception
             return;
         }
+        System.out.println("yes records");
 
         var queue = queuedImages.get(0);
         var image = queue.getImage();
