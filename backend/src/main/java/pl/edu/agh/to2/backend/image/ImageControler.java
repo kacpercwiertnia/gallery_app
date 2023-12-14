@@ -23,7 +23,7 @@ public class ImageControler {
         this.imageService = imageService;
     }
 
-    @GetMapping(value = "/get_them/{size}")
+    @GetMapping(value = "/get_images/{size}")
     public ResponseEntity getImages(@PathVariable String size) {
         try {
             List<String> base64Images = thumbnailService.getThumbnailsBySize(size);
@@ -35,9 +35,8 @@ public class ImageControler {
 
     }
 
-    @PostMapping("/post_them")
+    @PostMapping("/post_image")
     public ResponseEntity sendImage(@RequestBody String image) {
-        System.out.println("Dostałem obrazek");
         imageService.addNewImage(image);
         return ResponseEntity.ok(HttpStatus.ACCEPTED);
     }
