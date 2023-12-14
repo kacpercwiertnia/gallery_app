@@ -6,10 +6,21 @@ public enum ThumbnailSize {
     LARGE(800);
 
     private int size;
-    private ThumbnailSize(int size){
+
+    private ThumbnailSize(int size) {
         this.size = size;
     }
-    public int getSize(){
+
+    public int getSize() {
         return size;
+    }
+
+    public static ThumbnailSize fromString(String size) {
+        return switch (size) {
+            case "small" -> SMALL;
+            case "medium" -> MEDIUM;
+            case "large" -> LARGE;
+            default -> null;
+        };
     }
 }
