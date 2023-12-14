@@ -25,19 +25,18 @@ public class ThumbnailService {
         this.imageScaler = imageScaler;
     }
 
-    //should prints be changed to loggers?
     @Transactional
     public void resizeImageFromQueue() {
         var queuedImages = queueRepository.findAll();
         if (queuedImages.size() == 0) {
-            System.out.println("No records"); //maybe just custom exception
+            System.out.println("No records");
             return;
         }
 
         var queue = queuedImages.get(0);
         var image = queue.getImage();
 
-        for (ThumbnailSize size : ThumbnailSize.values()) { //make it multithread maybe
+        for (ThumbnailSize size : ThumbnailSize.values()) {
             try {
                 var scaledImage = imageScaler.scaleImage(image.getSource(), size.getSize());
                 var thumbnail = new Thumbnail(scaledImage, size, image);

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import pl.edu.agh.to2.backend.rest.SendImageRequest;
 import pl.edu.agh.to2.backend.thumbnail.ThumbnailService;
 
 import java.util.List;
@@ -23,8 +24,8 @@ public class ImageControler {
     }
 
     @PostMapping("/post_image")
-    public ResponseEntity sendImage(@RequestBody String image) {
-        imageService.addNewImage(image);
+    public ResponseEntity sendImage(@RequestBody SendImageRequest request) {
+        imageService.addNewImage(request.image());
         return ResponseEntity.ok(HttpStatus.ACCEPTED);
     }
 }
