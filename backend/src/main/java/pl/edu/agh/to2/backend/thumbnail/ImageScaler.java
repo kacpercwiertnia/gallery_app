@@ -1,7 +1,9 @@
 package pl.edu.agh.to2.backend.thumbnail;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
+
+
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,16 +19,15 @@ public class ImageScaler {
         var height = imageFromByteArray.getHeight();
         var width = imageFromByteArray.getWidth();
 
-        if (height > width){
-            ratio = (double) size/height;
-            xStart = (int) (size - ratio*width)/2;
-        }
-        else if (width > height){
-            ratio = (double) size/width;
-            yStart = (int) (size - ratio*height)/2;
+        if (height > width) {
+            ratio = (double) size / height;
+            xStart = (int) (size - ratio * width) / 2;
+        } else if (width > height) {
+            ratio = (double) size / width;
+            yStart = (int) (size - ratio * height) / 2;
         }
 
-        Image scaledImage = imageFromByteArray.getScaledInstance((int) (width*ratio), (int) (height*ratio), Image.SCALE_SMOOTH);
+        Image scaledImage = imageFromByteArray.getScaledInstance((int) (width * ratio), (int) (height * ratio), Image.SCALE_SMOOTH);
         BufferedImage outputImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
         outputImage.getGraphics().drawImage(scaledImage, xStart, yStart, null);
 

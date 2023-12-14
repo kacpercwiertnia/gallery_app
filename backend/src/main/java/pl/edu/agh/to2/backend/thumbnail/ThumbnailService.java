@@ -51,8 +51,11 @@ public class ThumbnailService {
         }
     }
 
-    public List<String> getThumbnailsBySize(String size) {
-
+    public List<String> getThumbnailsBySize(String size) throws IllegalArgumentException {
+        ThumbnailSize thumbnailSize = ThumbnailSize.fromString(size);
+        if (thumbnailSize == null) {
+            throw new IllegalArgumentException("Unrecognizable size value");
+        }
         List<Thumbnail> thumbnails = thumbnailRepository.findThumbnailsBySize(ThumbnailSize.fromString(size));
         List<String> encodedImages = new ArrayList<>();
         for (Thumbnail thumbnail : thumbnails) {

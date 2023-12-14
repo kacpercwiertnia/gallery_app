@@ -1,6 +1,12 @@
 package pl.edu.agh.to2.backend.image;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import pl.edu.agh.to2.backend.queue.Queue;
 import pl.edu.agh.to2.backend.thumbnail.Thumbnail;
 

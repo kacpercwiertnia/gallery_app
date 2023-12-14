@@ -16,7 +16,6 @@ public enum ThumbnailSize {
     }
 
     public static ThumbnailSize fromString(String size) {
-
         return switch (size) {
             case "small" -> SMALL;
             case "medium" -> MEDIUM;

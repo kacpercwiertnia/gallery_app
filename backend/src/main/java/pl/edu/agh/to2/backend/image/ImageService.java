@@ -4,14 +4,11 @@ import org.springframework.stereotype.Service;
 import pl.edu.agh.to2.backend.queue.QueueService;
 
 import java.util.Base64;
-import java.util.List;
-
 
 @Service
 public class ImageService {
     private final QueueService queueService;
     private final ImageRepository imageRepository;
-
 
     public ImageService(QueueService queueService, ImageRepository imageRepository) {
         this.queueService = queueService;

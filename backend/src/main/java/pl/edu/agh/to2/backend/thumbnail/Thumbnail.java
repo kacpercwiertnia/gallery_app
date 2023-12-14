@@ -13,7 +13,6 @@ public class Thumbnail {
     @Id
     @GeneratedValue
     private int thumbnailId;
-
     @Lob
     @Column(name = "source", length = 32768)
     private byte[] source;

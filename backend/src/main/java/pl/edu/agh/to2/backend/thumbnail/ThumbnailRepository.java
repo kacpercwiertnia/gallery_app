@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface ThumbnailRepository extends JpaRepository<Thumbnail, Integer> {
-    public List<Thumbnail> findThumbnailsBySize(ThumbnailSize size);
+    List<Thumbnail> findThumbnailsBySize(ThumbnailSize size);
 }
