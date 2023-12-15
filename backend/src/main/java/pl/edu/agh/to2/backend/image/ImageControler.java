@@ -26,7 +26,7 @@ public class ImageControler {
         try {
             imageService.addNewImage(request.image());
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Not a valid encoded image sent.");
+            return ResponseEntity.badRequest().body("Not a valid encoded image sent for at least one item.");
         }
 
         return ResponseEntity.ok(HttpStatus.ACCEPTED);
