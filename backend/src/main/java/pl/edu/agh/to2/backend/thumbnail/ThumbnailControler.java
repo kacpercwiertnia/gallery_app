@@ -18,8 +18,9 @@ public class ThumbnailControler {
     @GetMapping(value = "/get_thumbnails")
     public ResponseEntity getThumbnails(@RequestParam String size) {
         try {
+            int allImagesCount = thumbnailService.getAllImagesCount();
             List<String> base64Images = thumbnailService.getThumbnailsBySize(size);
-            GetThumbnailsResponse response = new GetThumbnailsResponse(base64Images);
+            GetThumbnailsResponse response = new GetThumbnailsResponse(base64Images, allImagesCount);
             return ResponseEntity.ok().body(response);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Unknown size value passed");
