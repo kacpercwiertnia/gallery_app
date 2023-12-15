@@ -2,14 +2,12 @@ package pl.edu.agh.to2.backend.image;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pl.edu.agh.to2.backend.rest.SendImageRequest;
-import pl.edu.agh.to2.backend.thumbnail.ThumbnailService;
+
 
 import java.util.List;
 
@@ -25,7 +23,12 @@ public class ImageControler {
 
     @PostMapping("/post_image")
     public ResponseEntity sendImage(@RequestBody SendImageRequest request) {
-        imageService.addNewImage(request.image());
+        try {
+            imageService.addNewImage(request.image());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Not a valid encoded image sent.");
+        }
+
         return ResponseEntity.ok(HttpStatus.ACCEPTED);
     }
 }
