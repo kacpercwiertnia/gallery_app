@@ -62,4 +62,8 @@ public class ThumbnailService {
         }
         return encodedImages;
     }
+
+    public int getAllImagesCount() {
+        return imageRepository.findAll().size();
+    }
 }
