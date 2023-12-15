@@ -33,7 +33,7 @@ public class ImageService {
                 if (mimetype != "image/jpeg" && mimetype != "image/png" && mimetype != "image/jpg") {
                     throw new IllegalArgumentException("Not a valid image");
                 }
-                checkedImages.add(new Image(byteImage, 2137));
+                checkedImages.add(new Image(byteImage));
             }
             imageRepository.saveAll(checkedImages);
             queueService.queueImages(checkedImages);

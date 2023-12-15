@@ -21,15 +21,13 @@ public class Image {
     @Lob
     @Column(name = "source", length = 32768)
     private byte[] source;
-    private int size;
     @OneToOne
     private Queue queueItem;
     @OneToMany
     private List<Thumbnail> Thumbnails;
 
-    public Image(byte[] source, int size) {
+    public Image(byte[] source) {
         this.source = source;
-        this.size = size;
         this.Thumbnails = new ArrayList<>();
     }
 
