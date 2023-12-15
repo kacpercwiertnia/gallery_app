@@ -1,15 +1,11 @@
 # Changelog
 
-- To run application execute command `./gradlew run` in backend directory
-
 ## 12.12.2023
 
 ### Database
-- H2 Database is locally stored 
 
-- Created database diagram
-
-    ![Database](./resources/database_diagram.png)
+- Created database diagram 
+![Database](./resources/database_diagram.png)
 - Created Enum that defines thumbnail sizes
     ```Java
     public enum ThumbnailSize {
@@ -25,8 +21,8 @@
 
 ### API
 Our application use 2 endpoints for communication: 
-- */image/post_image* which accepts list of images encoded in Base64
-- */thumbnails/get_thumbnails?size=* which takes request param {size:"small"|"medium"|"large"} returns list of encoded in Base64 images
+- */image/post_image* which accepts image encoded in Base64
+- */thumbnails/get_thumbnails* which takes request with payload {size:"small"|"medium"|"large"} returns list of encoded in Base64 images
 
 ## 12.12.2023
 
@@ -39,9 +35,3 @@ Our application use 2 endpoints for communication:
 - Added ThumbnailService - Service responsible for:
     - Adding scaled thumbnails to DataBase
     - Removing image from queue
-
-## 15.12.2023
-
-- Added tests for ImageControler and ImageScaler
-- Validation for sent encodend payloads
-- Acceptation of multiple images at once
