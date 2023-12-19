@@ -12,11 +12,10 @@ import java.util.List;
 
 @Service
 public class ThumbnailService {
-    private ThumbnailRepository thumbnailRepository;
-    private QueueRepository queueRepository;
-    private ImageRepository imageRepository;
-
-    private ImageScaler imageScaler;
+    private final ThumbnailRepository thumbnailRepository;
+    private final QueueRepository queueRepository;
+    private final ImageRepository imageRepository;
+    private final ImageScaler imageScaler;
 
     public ThumbnailService(ThumbnailRepository thumbnailRepository, QueueRepository queueRepository, ImageRepository imageRepository, ImageScaler imageScaler) {
         this.thumbnailRepository = thumbnailRepository;
@@ -50,20 +49,15 @@ public class ThumbnailService {
         }
     }
 
-    public List<String> getThumbnailsBySize(String size) throws IllegalArgumentException {
-        ThumbnailSize thumbnailSize = ThumbnailSize.fromString(size);
-        if (thumbnailSize == null) {
+    public List<String> getThumbnailsBySize(ThumbnailSize size) throws IllegalArgumentException {
+        if (size == null) {
             throw new IllegalArgumentException("Unrecognizable size value");
         }
-        List<Thumbnail> thumbnails = thumbnailRepository.findThumbnailsBySize(ThumbnailSize.fromString(size));
+        List<Thumbnail> thumbnails = thumbnailRepository.findThumbnailsBySize(size);
         List<String> encodedImages = new ArrayList<>();
         for (Thumbnail thumbnail : thumbnails) {
             encodedImages.add(Base64.getEncoder().encodeToString(thumbnail.getSource()));
         }
         return encodedImages;
-    }
-
-    public int getAllImagesCount() {
-        return imageRepository.findAll().size();
     }
 }

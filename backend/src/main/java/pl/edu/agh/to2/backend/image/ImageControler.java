@@ -6,25 +6,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.edu.agh.to2.backend.rest.SendImageRequest;
-
-
-import java.util.List;
+import pl.edu.agh.to2.backend.rest.SendImagesRequest;
 
 @RestController
 @RequestMapping("/image")
 public class ImageControler {
-    private ImageService imageService;
+    private final ImageService imageService;
 
 
     public ImageControler(ImageService imageService) {
         this.imageService = imageService;
     }
 
-    @PostMapping("/post_image")
-    public ResponseEntity sendImage(@RequestBody SendImageRequest request) {
+    @PostMapping
+    public ResponseEntity sendImages(@RequestBody SendImagesRequest request) {
         try {
-            imageService.addNewImage(request.image());
+            imageService.addNewImages(request.images());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Not a valid encoded image sent for at least one item.");
         }

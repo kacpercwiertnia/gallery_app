@@ -7,14 +7,14 @@ import java.util.List;
 
 @Service
 public class QueueService {
-    private QueueRepository queueRepository;
+    private final QueueRepository queueRepository;
 
     public QueueService(QueueRepository queueRepository) {
         this.queueRepository = queueRepository;
     }
 
     public void queueImages(List<Image> images) {
-        var queuedImages =  images.stream().map(Queue::new).toList();
+        var queuedImages = images.stream().map(Queue::new).toList();
         queueRepository.saveAll(queuedImages);
     }
 }

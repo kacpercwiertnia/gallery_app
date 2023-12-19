@@ -2,6 +2,7 @@ package pl.edu.agh.to2.backend.thumbnail;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.edu.agh.to2.backend.image.ImageService;
 import pl.edu.agh.to2.backend.rest.GetThumbnailsResponse;
 
 import java.util.List;
@@ -9,17 +10,19 @@ import java.util.List;
 @RestController
 @RequestMapping("/thumbnails")
 public class ThumbnailControler {
-    private ThumbnailService thumbnailService;
+    private final ThumbnailService thumbnailService;
+    private final ImageService imageService;
 
-    public ThumbnailControler(ThumbnailService thumbnailService) {
+    public ThumbnailControler(ThumbnailService thumbnailService, ImageService imageService) {
         this.thumbnailService = thumbnailService;
+        this.imageService = imageService;
     }
 
-    @GetMapping(value = "/get_thumbnails")
+    @GetMapping
     public ResponseEntity getThumbnails(@RequestParam String size) {
         try {
-            int allImagesCount = thumbnailService.getAllImagesCount();
-            List<String> base64Images = thumbnailService.getThumbnailsBySize(size);
+            int allImagesCount = imageService.getAllImagesCount();
+            List<String> base64Images = thumbnailService.getThumbnailsBySize(ThumbnailSize.fromString(size));
             GetThumbnailsResponse response = new GetThumbnailsResponse(base64Images, allImagesCount);
             return ResponseEntity.ok().body(response);
         } catch (IllegalArgumentException e) {
