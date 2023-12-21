@@ -26,7 +26,7 @@ public class ThumbnailControler {
             GetThumbnailsResponse response = new GetThumbnailsResponse(base64Images, allImagesCount);
             return ResponseEntity.ok().body(response);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("Unknown size value passed");
+            return ResponseEntity.badRequest().body("Unknown size value passed: " + size.toString());
         }
 
     }
