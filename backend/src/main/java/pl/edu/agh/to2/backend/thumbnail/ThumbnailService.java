@@ -40,7 +40,6 @@ public class ThumbnailService {
                 var scaledImage = imageScaler.scaleImage(image.getSource(), size.getSize());
                 var thumbnail = new Thumbnail(scaledImage, size, image);
                 thumbnailRepository.save(thumbnail);
-                image.removeFromQueue();
                 imageRepository.save(image);
                 queueRepository.delete(queue);
             } catch (IOException ex) {

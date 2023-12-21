@@ -19,10 +19,10 @@ public class ThumbnailControler {
     }
 
     @GetMapping
-    public ResponseEntity getThumbnails(@RequestParam String size) {
+    public ResponseEntity getThumbnails(@RequestParam ThumbnailSize size) {
         try {
             int allImagesCount = imageService.getAllImagesCount();
-            List<String> base64Images = thumbnailService.getThumbnailsBySize(ThumbnailSize.fromString(size));
+            List<String> base64Images = thumbnailService.getThumbnailsBySize(size);
             GetThumbnailsResponse response = new GetThumbnailsResponse(base64Images, allImagesCount);
             return ResponseEntity.ok().body(response);
         } catch (IllegalArgumentException e) {
