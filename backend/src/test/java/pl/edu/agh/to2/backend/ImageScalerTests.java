@@ -1,8 +1,10 @@
 package pl.edu.agh.to2.backend;
 
+import org.apache.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import pl.edu.agh.to2.backend.thumbnail.ImageScaler;
@@ -19,6 +21,7 @@ import java.nio.file.Paths;
 @SpringBootTest
 @TestPropertySource(properties = "app.scheduling.enable=false")
 public class ImageScalerTests {
+    private final static org.slf4j.Logger log = LoggerFactory.getLogger(Logger.class);
     static Path resourceDirectory = Paths.get("src","test","resources");
     static String absolutePath = resourceDirectory.toFile().getAbsolutePath();
     static byte[] image;
@@ -26,7 +29,7 @@ public class ImageScalerTests {
 
     @BeforeAll
     static void setup(){
-        System.out.println("startup");
+        log.info("Starting tests");
 
         try {
             image = Files.readAllBytes(Paths.get(absolutePath+"/image1.jpg"));
