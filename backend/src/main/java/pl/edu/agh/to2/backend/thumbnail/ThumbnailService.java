@@ -1,6 +1,8 @@
 package pl.edu.agh.to2.backend.thumbnail;
 
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pl.edu.agh.to2.backend.image.ImageRepository;
 import pl.edu.agh.to2.backend.queue.QueueRepository;
@@ -16,7 +18,7 @@ public class ThumbnailService {
     private final QueueRepository queueRepository;
     private final ImageRepository imageRepository;
     private final ImageScaler imageScaler;
-
+    private final Logger log = LoggerFactory.getLogger(Logger.class);
     public ThumbnailService(ThumbnailRepository thumbnailRepository, QueueRepository queueRepository, ImageRepository imageRepository, ImageScaler imageScaler) {
         this.thumbnailRepository = thumbnailRepository;
         this.queueRepository = queueRepository;
@@ -28,7 +30,7 @@ public class ThumbnailService {
     public void resizeImageFromQueue() {
         var queuedImages = queueRepository.findAll();
         if (queuedImages.size() == 0) {
-            System.out.println("No records");
+            log.info("No records in queue");
             return;
         }
 
@@ -43,7 +45,7 @@ public class ThumbnailService {
                 imageRepository.save(image);
                 queueRepository.delete(queue);
             } catch (IOException ex) {
-                System.out.println("Operation failed for image with ID: " + image.getImageId() + " and size: " + size);
+                log.warn("Operation failed for image with ID: " + image.getImageId() + " and size: " + size);
             }
         }
     }
