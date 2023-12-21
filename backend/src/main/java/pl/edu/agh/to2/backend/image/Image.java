@@ -21,8 +21,6 @@ public class Image {
     @Lob
     @Column(name = "source", length = 32768)
     private byte[] source;
-    @OneToOne
-    private Queue queueItem;
     @OneToMany
     private List<Thumbnail> Thumbnails;
 
@@ -42,22 +40,10 @@ public class Image {
         return source;
     }
 
-    public Queue getQueueItem() {
-        return queueItem;
-    }
-
     public List<Thumbnail> getThumbnails() {
         return Thumbnails;
     }
-
-    public void addToQueue(Queue queueItem) {
-        this.queueItem = queueItem;
-    }
-
-    public void removeFromQueue() {
-        this.queueItem = null;
-    }
-
+    
     public void addThumbnails(Thumbnail thumbnail) {
         Thumbnails.add(thumbnail);
     }
