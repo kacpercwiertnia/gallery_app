@@ -42,8 +42,8 @@ public class ImageControlerTests {
 
         //then
         try {
-            mockMvc.perform(post("/image/post_image")
-                    .content("{\"image\":[\""+encodedContent[0]+"\"]}")
+            mockMvc.perform(post("/image")
+                    .content("{\"images\":[\""+encodedContent[0]+"\"]}")
                     .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
         } catch (Exception e) {
@@ -65,8 +65,8 @@ public class ImageControlerTests {
 
         //then
         try {
-            mockMvc.perform(post("/image/post_image")
-                            .content("{\"image\":[\""+encodedContent[0]+"\",\""+encodedContent[1]+"\"]}")
+            mockMvc.perform(post("/image")
+                            .content("{\"images\":[\""+encodedContent[0]+"\",\""+encodedContent[1]+"\"]}")
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk());
         } catch (Exception e) {
