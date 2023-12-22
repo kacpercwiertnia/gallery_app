@@ -17,13 +17,16 @@ public class Thumbnail {
     @Column(name = "source", length = 32768)
     private byte[] source;
     private ThumbnailSize size;
+
+    private boolean isSuccesful;
     @ManyToOne
     private Image image;
 
-    public Thumbnail(byte[] source, ThumbnailSize size, Image image) {
+    public Thumbnail(byte[] source, ThumbnailSize size, Image image, boolean isSuccesful) {
         this.source = source;
         this.size = size;
         this.image = image;
+        this.isSuccesful = isSuccesful;
     }
 
     public Thumbnail() {
@@ -43,5 +46,9 @@ public class Thumbnail {
 
     public Image getImage() {
         return image;
+    }
+
+    public boolean getIsSuccesful(){
+        return isSuccesful;
     }
 }

@@ -5,9 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.agh.to2.backend.image.ImageService;
-import pl.edu.agh.to2.backend.rest.GetThumbnailsResponse;
-
-import java.util.List;
+import pl.edu.agh.to2.backend.rest.ThumbnailsRequest;
 
 @RestController
 @RequestMapping("/thumbnails")
@@ -22,17 +20,15 @@ public class ThumbnailControler {
     }
 
     @GetMapping
-    public ResponseEntity getThumbnails(@RequestParam ThumbnailSize size) {
-        try {
-            log.info("Received request for thumbnails of " + size + " size");
-            int allImagesCount = imageService.getAllImagesCount();
-            List<String> base64Images = thumbnailService.getThumbnailsBySize(size);
-            GetThumbnailsResponse response = new GetThumbnailsResponse(base64Images, allImagesCount);
-            return ResponseEntity.ok().body(response);
-        } catch (IllegalArgumentException e) {
-            log.warn("Request failed due to bad parameter");
+    public ResponseEntity getRequestedThumbnails(@RequestBody ThumbnailsRequest request){
+        var imagesIds = request.imagesIds();
+        var size = request.size();
+        try{
+            var thumbnails = thumbnailService.getThumbnailsByIdsAndSize(imagesIds, size);
+            return ResponseEntity.ok().body(thumbnails);
+        }
+        catch(IllegalArgumentException e){
             return ResponseEntity.badRequest().body("Unknown size value passed: " + size.toString());
         }
-
     }
 }
