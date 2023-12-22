@@ -41,7 +41,7 @@ public class ImageScalerTests {
     }
 
     @Test
-    public void checkScalingToSmallGivenImage(){
+    public void shouldScaleToSmallGivenImage(){
         //given
         ThumbnailSize size = ThumbnailSize.SMALL;
 
@@ -67,7 +67,7 @@ public class ImageScalerTests {
     }
 
     @Test
-    public void checkScalingToMediumGivenImage(){
+    public void shouldScaleToMediumGivenImage(){
         //given
         ThumbnailSize size = ThumbnailSize.MEDIUM;
 
@@ -93,7 +93,7 @@ public class ImageScalerTests {
     }
 
     @Test
-    public void checkScalingToLargeGivenImage(){
+    public void shouldScaleToLargeGivenImage(){
         //given
         ThumbnailSize size = ThumbnailSize.LARGE;
 

@@ -45,3 +45,18 @@ Our application use 2 endpoints for communication:
 - Added tests for ImageControler and ImageScaler
 - Validation for sent encodend payloads
 - Acceptation of multiple images at once
+
+## 19.12.2023
+- Made all final fields final
+- Replaced SOUT with Logger
+- Fixed endpoints names
+- Put streams in try-with-resources blocks
+
+## 22.12.2023
+- Changed polling logic:
+  - Created endpoint returning all images IDs in Image Controler
+  - Created endpoint returning requested thumbnails (by ImageId and Size) in Thumbnails Controler
+  - Added flag isSuccessful to Thumbnail
+- Fixed Image Scaler
+- Created Request and Response classes for endpoints
+- Changed test names
