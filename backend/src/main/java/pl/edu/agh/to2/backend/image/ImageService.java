@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -45,7 +44,10 @@ public class ImageService {
 
     }
 
-    public int getAllImagesCount() {
-        return imageRepository.findAll().size();
+    public List<Integer> getImagesIds(){
+        return imageRepository.findAll()
+                .stream()
+                .map(Image::getImageId)
+                .toList();
     }
 }

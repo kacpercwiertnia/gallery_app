@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pl.edu.agh.to2.backend.image.ImageRepository;
 import pl.edu.agh.to2.backend.queue.QueueRepository;
+import pl.edu.agh.to2.backend.rest.ThumbnailDto;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -40,25 +40,27 @@ public class ThumbnailService {
         for (ThumbnailSize size : ThumbnailSize.values()) {
             try {
                 var scaledImage = imageScaler.scaleImage(image.getSource(), size.getSize());
-                var thumbnail = new Thumbnail(scaledImage, size, image);
+                var thumbnail = new Thumbnail(scaledImage, size, image, true);
                 thumbnailRepository.save(thumbnail);
-                imageRepository.save(image);
-                queueRepository.delete(queue);
+                image.addThumbnails(thumbnail);
             } catch (IOException ex) {
                 log.warn("Operation failed for image with ID: " + image.getImageId() + " and size: " + size);
+                var thumbnail = new Thumbnail(new byte[0], size, image, false);
+                thumbnailRepository.save(thumbnail);
+                image.addThumbnails(thumbnail);
             }
         }
+
+        imageRepository.save(image);
+        queueRepository.delete(queue);
     }
 
-    public List<String> getThumbnailsBySize(ThumbnailSize size) throws IllegalArgumentException {
-        if (size == null) {
-            throw new IllegalArgumentException("Unrecognizable size value");
-        }
-        List<Thumbnail> thumbnails = thumbnailRepository.findThumbnailsBySize(size);
-        List<String> encodedImages = new ArrayList<>();
-        for (Thumbnail thumbnail : thumbnails) {
-            encodedImages.add(Base64.getEncoder().encodeToString(thumbnail.getSource()));
-        }
-        return encodedImages;
+    public List<ThumbnailDto> getThumbnailsByIdsAndSize(List<Integer> imagesIds, ThumbnailSize size){
+        List<Thumbnail> thumbnails = thumbnailRepository.findThumbnailsByIdAndSize(imagesIds, size);
+        return thumbnails
+                .stream()
+                .map(thumbnail -> new ThumbnailDto(thumbnail.getImage().getImageId(), Base64.getEncoder().encodeToString(thumbnail.getSource()),
+                        thumbnail.getIsSuccesful()))
+                .toList();
     }
 }

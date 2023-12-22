@@ -6,8 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import pl.edu.agh.to2.backend.queue.Queue;
 import pl.edu.agh.to2.backend.thumbnail.Thumbnail;
 
 import java.util.ArrayList;
