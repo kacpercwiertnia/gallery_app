@@ -31,7 +31,7 @@ public class ImageControlerTests {
     private MockMvc mockMvc;
 
     @Test
-    public void checkIfReturns202GivenSingleImage(){
+    public void shouldReturn202GivenSingleImage(){
         //given
         try {
             content = Files.readAllBytes(Paths.get(absolutePath+"/image1.jpg"));
@@ -52,7 +52,7 @@ public class ImageControlerTests {
     }
 
     @Test
-    public void checkIfReturns202GivenMultipleImages(){
+    public void shouldReturn202GivenMultipleImages(){
         //given
         try {
             content = Files.readAllBytes(Paths.get(absolutePath+"/image1.jpg"));
