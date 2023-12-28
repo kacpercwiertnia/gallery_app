@@ -1,0 +1,17 @@
+.gallery-pane{
+    -fx-padding: 8;
+    -fx-spacing: 8;
+}
+.navbar{
+    -fx-padding: 8;
+    -fx-spacing: 8;
+    -fx-alignment: "center";
+}
+.navber .select-label{
+    -fx-pref-width: 150;
+}
+
+#thumbnailGrid .thumbnail{
+    -fx-max-width: 150;
+    -fx-max-height: 150;
+}
