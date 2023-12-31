@@ -10,12 +10,12 @@
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="pl.edu.agh.to2.gallery.GalleryControler"
-            minHeight="550.0" minWidth="850.0"
             styleClass="gallery-pane"
             stylesheets="styles/gallery.css">
     <top>
         <HBox styleClass="navbar">
             <Button styleClass="upload-button" text="Prześlij zdjęcia" onAction="#uploadImageButtonClicked"/>
+            <Button styleClass="upload-button" text="Odśwież" onAction="#refreshThumbnailsLists"/>
             <Region HBox.hgrow="ALWAYS"/>
             <Label styleClass="select-label" text="Wybierz rozmiar miniatur: "/>
             <ChoiceBox styleClass="navbar-select" value="SMALL" fx:id="sizeSelect">
@@ -30,7 +30,9 @@
         </HBox>
     </top>
     <center>
-        <GridPane fx:id="thumbnailGrid">
-        </GridPane>
+        <ScrollPane>
+            <GridPane fx:id="thumbnailGrid" hgap="5" vgap="5">
+            </GridPane>
+        </ScrollPane>
     </center>
 </BorderPane>
