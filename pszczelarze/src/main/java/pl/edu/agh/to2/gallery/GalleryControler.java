@@ -36,6 +36,7 @@ public class GalleryControler {
     private final List<Integer> waitingIds = new ArrayList<>();
     private final List<Integer> collectedIds = new ArrayList<>();
     private int numOfImages = 0;
+    private String placeholderUrl = "placeholder_small.gif";
 
     @FXML
     public void uploadImageButtonClicked(ActionEvent actionEvent){
@@ -52,12 +53,6 @@ public class GalleryControler {
             HttpResponse<String> response = imageRequest.getResponse();
 
             if(response != null && response.statusCode() == 200){
-                File file2 = new File("src/main/resources/images/placeholder_small.gif");
-                Image image = new Image(file2.toURI().toString());
-                ImageView imageView = new ImageView(image);
-                waitingThumbnails.add(imageView);
-                thumbnailGrid.add(imageView, numOfImages%4, numOfImages/4);
-                numOfImages += 1;
                 refreshIdsLists();
             }
 
@@ -81,6 +76,12 @@ public class GalleryControler {
 
                 if(!collectedIds.contains(id) && !waitingIds.contains(id)){
                     waitingIds.add(id);
+                    File file2 = new File("src/main/resources/images/"+placeholderUrl);
+                    Image image = new Image(file2.toURI().toString());
+                    ImageView imageView = new ImageView(image);
+                    waitingThumbnails.add(imageView);
+                    thumbnailGrid.add(imageView, numOfImages%4, numOfImages/4);
+                    numOfImages += 1;
                 }
             }
         }
@@ -117,6 +118,17 @@ public class GalleryControler {
                 }
 
             }
+        }
+    }
+
+    @FXML
+    public void thumbnailSizeChanged(ActionEvent event){
+        if(sizeSelect.getValue().toString().equals("SMALL")){
+            placeholderUrl = "placeholder_small.gif";
+        } else if(sizeSelect.getValue().toString().equals("MEDIUM")) {
+            placeholderUrl = "placeholder_medium.gif";
+        } else if(sizeSelect.getValue().toString().equals("LARGE")){
+            placeholderUrl = "placeholder_large.gif";
         }
     }
 }
