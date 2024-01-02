@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import pl.edu.agh.to2.Main;
 
 import java.io.IOException;
 
@@ -21,8 +22,7 @@ public class GalleryApp extends Application {
             primaryStage.setScene(scene);
             primaryStage.show();
         } catch (IOException e) {
-            // don't do this in common apps
-            e.printStackTrace();
+            Main.log.info(e.getMessage());
         }
     }
 }

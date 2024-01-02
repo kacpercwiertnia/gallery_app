@@ -10,6 +10,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import pl.edu.agh.to2.Main;
 import pl.edu.agh.to2.rest.ImageIdsRequest;
 import pl.edu.agh.to2.rest.ImageRequest;
 import pl.edu.agh.to2.rest.ThumbnailsRequest;
@@ -30,10 +31,10 @@ public class GalleryControler {
     private GridPane thumbnailGrid;
     @FXML
     private ChoiceBox sizeSelect;
-    private List<ImageView> thumbnailsWaiting = new ArrayList<>();
-    private List<ImageView> thumbnailsColected= new ArrayList<>();
-    private List<Integer> waitingIds = new ArrayList<>();
-    private List<Integer> collectedIds = new ArrayList<>();
+    private final List<ImageView> waitingThumbnails = new ArrayList<>();
+    private final List<ImageView> colectedThumbnails= new ArrayList<>();
+    private final List<Integer> waitingIds = new ArrayList<>();
+    private final List<Integer> collectedIds = new ArrayList<>();
     private int numOfImages = 0;
 
     @FXML
@@ -54,14 +55,14 @@ public class GalleryControler {
                 File file2 = new File("src/main/resources/images/placeholder_small.gif");
                 Image image = new Image(file2.toURI().toString());
                 ImageView imageView = new ImageView(image);
-                thumbnailsWaiting.add(imageView);
+                waitingThumbnails.add(imageView);
                 thumbnailGrid.add(imageView, numOfImages%4, numOfImages/4);
                 numOfImages += 1;
                 refreshIdsLists();
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Main.log.info(e.getMessage());
         }
     }
 
@@ -109,10 +110,10 @@ public class GalleryControler {
 
                     InputStream is = Base64.getDecoder().wrap(new ByteArrayInputStream(image.getBytes()));
 
-                    ImageView imageView = thumbnailsWaiting.remove(0);
+                    ImageView imageView = waitingThumbnails.remove(0);
                     imageView.setImage(new Image(is));
 
-                    thumbnailsColected.add(imageView);
+                    colectedThumbnails.add(imageView);
                 }
 
             }

@@ -1,5 +1,7 @@
 package pl.edu.agh.to2.rest;
 
+import pl.edu.agh.to2.Main;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -25,9 +27,9 @@ public class ImageIdsRequest {
         try {
             response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Main.log.info(e.getMessage());
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            Main.log.info(e.getMessage());
         }
 
         return response;

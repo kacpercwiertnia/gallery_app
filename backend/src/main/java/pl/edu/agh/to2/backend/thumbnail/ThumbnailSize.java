@@ -1,9 +1,9 @@
 package pl.edu.agh.to2.backend.thumbnail;
 
 public enum ThumbnailSize {
-    SMALL(150),
-    MEDIUM(500),
-    LARGE(800);
+    SMALL(75),
+    MEDIUM(150),
+    LARGE(225);
 
     private int size;
 
