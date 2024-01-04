@@ -39,6 +39,12 @@ public class GalleryControler {
     private String placeholderUrl = "placeholder_small.gif";
 
     @FXML
+    public void initialize(){
+        Thread scheduler = new PollingScheduler(this);
+        scheduler.start();
+    }
+
+    @FXML
     public void uploadImageButtonClicked(ActionEvent actionEvent){
         FileChooser fileChooser = new FileChooser();
         File file = fileChooser.showOpenDialog(null);
@@ -87,7 +93,6 @@ public class GalleryControler {
         }
     }
 
-    @FXML
     public void refreshThumbnailsLists(){
         refreshIdsLists();
         ThumbnailsRequest thumbnailsRequest = new ThumbnailsRequest(waitingIds, sizeSelect.getValue().toString());
@@ -123,6 +128,13 @@ public class GalleryControler {
 
     @FXML
     public void thumbnailSizeChanged(ActionEvent event){
+        waitingIds.clear();
+        collectedIds.clear();
+        colectedThumbnails.clear();
+        waitingThumbnails.clear();
+        thumbnailGrid.getChildren().clear();
+        numOfImages = 0;
+        refreshThumbnailsLists();
         if(sizeSelect.getValue().toString().equals("SMALL")){
             placeholderUrl = "placeholder_small.gif";
         } else if(sizeSelect.getValue().toString().equals("MEDIUM")) {
