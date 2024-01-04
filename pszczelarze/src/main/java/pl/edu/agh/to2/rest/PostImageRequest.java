@@ -5,19 +5,27 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 public class PostImageRequest {
-    private String image;
+    private List<String> images;
     private HttpRequest request;
 
-    public PostImageRequest(String image){
-        this.image = image;
+    public PostImageRequest(List<String> images){
+        this.images = images;
     }
     public void build(){
+        var body = new StringBuilder();
+
+        for(String image : images){
+            body.append("\"" + image + "\",");
+        }
+        body.deleteCharAt(body.length()-1);
+
         this.request = HttpRequest.newBuilder()
                 .uri(URI.create("http://localhost:8080/image"))
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString("{\"images\":[\""+image+"\"]}"))
+                .POST(HttpRequest.BodyPublishers.ofString("{\"images\":["+body.toString()+"]}"))
                 .build();
     }
     public HttpResponse<String> getResponse(){

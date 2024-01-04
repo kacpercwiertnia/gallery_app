@@ -7,6 +7,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -40,9 +42,12 @@ public class GalleryControler {
     private GridPane thumbnailGrid;
     @FXML
     private ChoiceBox sizeSelect;
+    @FXML
+    private Label uploadImagesLabel;
     private final CashedThumbnails thumbnails;
     private Map<Integer,ImageView> selectedThumbnails;
     private List<Integer> waitingIds;
+    private List<String> uploadedImages;
     private int numOfImages = 0;
     private String placeholderUrl = "placeholder_small.gif";
     private Thread scheduler;
@@ -53,6 +58,7 @@ public class GalleryControler {
         this.thumbnails = new CashedThumbnails();
         this.selectedThumbnails = thumbnails.getThumbnails(ThumbnailSize.SMALL);
         this.waitingIds = thumbnails.getWaitingImagesIds(ThumbnailSize.SMALL);
+        this.uploadedImages = new ArrayList<>();
     }
 
     @FXML
@@ -64,18 +70,24 @@ public class GalleryControler {
         try {
             byte[] fileContent = Files.readAllBytes(file.toPath());
             String stringImage = Base64.getEncoder().encodeToString(fileContent);
-            PostImageRequest postImageRequest = new PostImageRequest(stringImage);
-            postImageRequest.build();
-
-            HttpResponse<String> response = postImageRequest.getResponse();
-
-            if(response != null && response.statusCode() == 200){
-                refreshIdsLists();
-            }
-
+            uploadedImages.add(stringImage);
+            uploadImagesLabel.setText("Wybrane obrazki: " + uploadedImages.size());
         } catch (IOException e) {
             Main.log.info(e.getMessage());
         }
+    }
+
+    public void sendUploadedImages(ActionEvent actionEvent){
+        PostImageRequest postImageRequest = new PostImageRequest(uploadedImages);
+        postImageRequest.build();
+
+        HttpResponse<String> response = postImageRequest.getResponse();
+
+        if(response != null && response.statusCode() == 200){
+            refreshIdsLists();
+        }
+        uploadedImages.clear();
+        uploadImagesLabel.setText("");
     }
 
     public void refreshIdsLists(){
@@ -105,6 +117,9 @@ public class GalleryControler {
 
     public void refreshThumbnailsLists(){
         refreshIdsLists();
+
+        if (waitingIds.size() == 0) return;
+
         ThumbnailsRequest thumbnailsRequest = new ThumbnailsRequest(waitingIds, sizeSelect.getValue().toString());
         thumbnailsRequest.build();
 
@@ -171,7 +186,7 @@ public class GalleryControler {
 
     private void seeOriginalImage(MouseEvent event, int imageId) {
         try{
-            GetImageRequest request = new GetImageRequest(imageId);
+            var request = new GetImageRequest(imageId);
             request.build();
 
             HttpResponse<String> response = request.getResponse();

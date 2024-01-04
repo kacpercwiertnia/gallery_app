@@ -15,7 +15,8 @@
     <top>
         <HBox styleClass="navbar">
             <Button styleClass="upload-button" text="Prześlij zdjęcia" onAction="#uploadImageButtonClicked"/>
-            <Button styleClass="upload-button" text="Odśwież" />
+            <Button styleClass="upload-button" text="Wyślij" onAction="#sendUploadedImages"/>
+            <Label fx:id="uploadImagesLabel"/>
             <Region HBox.hgrow="ALWAYS"/>
             <Label styleClass="select-label" text="Wybierz rozmiar miniatur: "/>
             <ChoiceBox styleClass="navbar-select" value="SMALL" fx:id="sizeSelect" onAction="#thumbnailSizeChanged">

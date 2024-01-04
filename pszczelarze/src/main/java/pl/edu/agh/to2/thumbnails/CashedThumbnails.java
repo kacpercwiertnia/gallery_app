@@ -16,7 +16,6 @@ public class CashedThumbnails {
     private final List<Integer> waitingSmallImagesIds;
     private final List<Integer> waitingMediumImagesIds;
     private final List<Integer> waitingLargeImagesIds;
-    private final Map<ThumbnailSize,String> PLACEHOLDER_PATHS = new HashMap<>();
 
     public CashedThumbnails(){
         this.smallThumbnails = new HashMap<>();
@@ -25,9 +24,6 @@ public class CashedThumbnails {
         this.waitingSmallImagesIds = new ArrayList<>();
         this.waitingMediumImagesIds = new ArrayList<>();
         this.waitingLargeImagesIds = new ArrayList<>();
-        PLACEHOLDER_PATHS.put(ThumbnailSize.SMALL, "placeholder_small.gif");
-        PLACEHOLDER_PATHS.put(ThumbnailSize.MEDIUM, "placeholder_medium.gif");
-        PLACEHOLDER_PATHS.put(ThumbnailSize.LARGE, "placeholder_large");
     }
 
     public Map<Integer, ImageView> getThumbnails(ThumbnailSize size){
