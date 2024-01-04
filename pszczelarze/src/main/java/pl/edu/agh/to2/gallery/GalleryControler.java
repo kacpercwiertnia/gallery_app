@@ -21,6 +21,8 @@ import pl.edu.agh.to2.rest.GetImageRequest;
 import pl.edu.agh.to2.rest.ImageIdsRequest;
 import pl.edu.agh.to2.rest.PostImageRequest;
 import pl.edu.agh.to2.rest.ThumbnailsRequest;
+import pl.edu.agh.to2.thumbnails.CashedThumbnails;
+import pl.edu.agh.to2.thumbnails.ThumbnailSize;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -29,31 +31,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 public class GalleryControler {
     @FXML
     private GridPane thumbnailGrid;
     @FXML
     private ChoiceBox sizeSelect;
-    private final List<ImageView> waitingThumbnails = new ArrayList<>();
-    private final List<ImageView> colectedThumbnails = new ArrayList<>();
-    private final List<Integer> waitingIds = new ArrayList<>();
-    private final List<Integer> collectedIds = new ArrayList<>();
+    private final CashedThumbnails thumbnails;
+    private Map<Integer,ImageView> selectedThumbnails;
+    private List<Integer> waitingIds;
     private int numOfImages = 0;
     private String placeholderUrl = "placeholder_small.gif";
     private Thread scheduler;
-    private boolean isRunning = true;
 
     public GalleryControler(){
-        scheduler = new PollingScheduler(this);
-        scheduler.start();
-    }
-
-    public boolean isRunning() {
-        return isRunning;
+        this.scheduler = new PollingScheduler(this);
+        this.scheduler.start();
+        this.thumbnails = new CashedThumbnails();
+        this.selectedThumbnails = thumbnails.getThumbnails(ThumbnailSize.SMALL);
+        this.waitingIds = thumbnails.getWaitingImagesIds(ThumbnailSize.SMALL);
     }
 
     @FXML
@@ -92,14 +91,13 @@ public class GalleryControler {
             for(int i = 0; i < imagesIds.length(); i++){
                 int id = imagesIds.getInt(i);
 
-                if(!collectedIds.contains(id) && !waitingIds.contains(id)){
+                if(!selectedThumbnails.containsKey(id) && !waitingIds.contains(id)){
                     waitingIds.add(id);
                     File file2 = new File("src/main/resources/images/"+placeholderUrl);
                     Image image = new Image(file2.toURI().toString());
                     ImageView imageView = new ImageView(image);
-                    waitingThumbnails.add(imageView);
-                    thumbnailGrid.add(imageView, numOfImages%4, numOfImages/4);
-                    numOfImages += 1;
+                    selectedThumbnails.put(id, imageView);
+                    thumbnailGrid.add(selectedThumbnails.get(id), (selectedThumbnails.size()-1)%4, (selectedThumbnails.size()-1)/4);
                 }
             }
         }
@@ -123,46 +121,56 @@ public class GalleryControler {
                 boolean status = thumbnail.getBoolean("isCorrect");
 
                 if(status){
-                    collectedIds.add(id);
                     waitingIds.remove(Integer.valueOf(id));
-
                     InputStream is = Base64.getDecoder().wrap(new ByteArrayInputStream(image.getBytes()));
-
-                    ImageView imageView = waitingThumbnails.remove(0);
+                    ImageView imageView = selectedThumbnails.get(id);
                     imageView.setImage(new Image(is));
                     imageView.addEventHandler(MouseEvent.MOUSE_CLICKED,event->{
-                        System.out.println(id);
                         seeOriginalImage(event,id);
                     });
-
-                    colectedThumbnails.add(imageView);
                 }
-
             }
         }
     }
 
     @FXML
     public void thumbnailSizeChanged(ActionEvent event){
-        waitingIds.clear();
-        collectedIds.clear();
-        colectedThumbnails.clear();
-        waitingThumbnails.clear();
         thumbnailGrid.getChildren().clear();
+        switch(sizeSelect.getValue().toString()){
+            case "SMALL":
+                this.waitingIds = thumbnails.getWaitingImagesIds(ThumbnailSize.SMALL);
+                this.selectedThumbnails = thumbnails.getThumbnails(ThumbnailSize.SMALL);
+                placeholderUrl = "placeholder_small.gif";
+                break;
+            case "MEDIUM":
+                this.waitingIds = thumbnails.getWaitingImagesIds(ThumbnailSize.MEDIUM);
+                this.selectedThumbnails = thumbnails.getThumbnails(ThumbnailSize.MEDIUM);
+                placeholderUrl = "placeholder_medium.gif";
+                break;
+            case "LARGE":
+                this.waitingIds = thumbnails.getWaitingImagesIds(ThumbnailSize.LARGE);
+                this.selectedThumbnails = thumbnails.getThumbnails(ThumbnailSize.LARGE);
+                placeholderUrl = "placeholder_large.gif";
+                break;
+            default:
+                break;
+        }
         numOfImages = 0;
         refreshThumbnailsLists();
-        if(sizeSelect.getValue().toString().equals("SMALL")){
-            placeholderUrl = "placeholder_small.gif";
-        } else if(sizeSelect.getValue().toString().equals("MEDIUM")) {
-            placeholderUrl = "placeholder_medium.gif";
-        } else if(sizeSelect.getValue().toString().equals("LARGE")){
-            placeholderUrl = "placeholder_large.gif";
-        }
+        redrawThumbnailGrid();
+    }
+
+    private void redrawThumbnailGrid(){
+        selectedThumbnails.forEach((K,V)->{
+            if (!thumbnailGrid.getChildren().contains(V)) {
+                thumbnailGrid.getChildren().add(V);
+                numOfImages++;
+            }
+        });
     }
 
     private void seeOriginalImage(MouseEvent event, int imageId) {
         try{
-
             GetImageRequest request = new GetImageRequest(imageId);
             request.build();
 
@@ -178,14 +186,12 @@ public class GalleryControler {
                 Parent root = loader.load();
                 OriginalImageController controller = loader.getController();
 
-
                 Scene scene = new Scene(root,image.getWidth(),image.getHeight());
                 Stage stage = new Stage();
                 stage.setScene(scene);
                 stage.show();
                 controller.initialize(image);
             }
-
         } catch (IOException e){
             e.printStackTrace();
             Main.log.warning("Failed to load FXML file." );
