@@ -1,6 +1,7 @@
 package pl.edu.agh.to2.gallery;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -20,6 +21,10 @@ public class GalleryApp extends Application {
 
             Scene scene = new Scene(rootLayout);
             primaryStage.setScene(scene);
+            primaryStage.setOnCloseRequest(e -> {
+                Platform.exit();
+                System.exit(0);
+            });
             primaryStage.show();
         } catch (IOException e) {
             Main.log.info(e.getMessage());

@@ -11,6 +11,7 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -44,10 +45,20 @@ public class ImageService {
 
     }
 
-    public List<Integer> getImagesIds(){
+    public List<Integer> getImagesIds() {
         return imageRepository.findAll()
                 .stream()
                 .map(Image::getImageId)
                 .toList();
+    }
+
+    public String getImageById(int id) throws IllegalArgumentException {
+        Optional<Image> image = imageRepository.findById(id);
+        if (image.isPresent()) {
+            return Base64.getEncoder().encodeToString(image.get().getSource());
+        }
+        throw new IllegalArgumentException("No image with given ID");
+
+
     }
 }
