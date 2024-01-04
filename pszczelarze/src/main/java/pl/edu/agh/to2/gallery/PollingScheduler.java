@@ -11,7 +11,7 @@ public class PollingScheduler extends Thread{
     @Override
     public void run(){
         try{
-            while(true){
+            while(galleryControler.isRunning()){
                 Main.log.info("Requesting for thumbnails update...");
                 Platform.runLater(galleryControler::refreshThumbnailsLists);
                 Thread.sleep(3000);

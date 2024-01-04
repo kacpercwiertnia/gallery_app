@@ -6,18 +6,18 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class ImageRequest {
-    private String image;
+public class GetImageRequest {
+    private int imageId;
     private HttpRequest request;
 
-    public ImageRequest(String image){
-        this.image = image;
+    public GetImageRequest(int id){
+        this.imageId = id;
     }
     public void build(){
         this.request = HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/image"))
+                .uri(URI.create("http://localhost:8080/image/"+this.imageId))
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString("{\"images\":[\""+image+"\"]}"))
+                .GET()
                 .build();
     }
     public HttpResponse<String> getResponse(){
@@ -32,5 +32,4 @@ public class ImageRequest {
 
         return response;
     }
-
 }
