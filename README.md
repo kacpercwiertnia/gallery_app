@@ -69,6 +69,6 @@ Our application use 2 endpoints for communication:
 - Created beautiful UI which can send many photos (i.e. one photo)
 - Added new endpoint for getting original image size
 - Implemented polling mechanism which asks for any new images, and updates
-- Frontend Cacheing mechanism which prevents from disappearing thumbnails when size changes.
+- Frontend Cache mechanism which prevents from disappearing thumbnails when size changes.
 - When thumbnail clicked, new window with original image appears.
-- New Thumbnails have placeholder, and gets updates as soon as pooling mechanism get photo.
+- New images have thumbnail_placeholder which get updated as soon as polling mechanism gets scaled thumbnail.
