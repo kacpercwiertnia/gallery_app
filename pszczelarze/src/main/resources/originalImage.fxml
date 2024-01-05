@@ -10,5 +10,9 @@
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="pl.edu.agh.to2.image.OriginalImageController"
             prefHeight="400.0" prefWidth="600.0">
-            <ImageView fx:id = "originalImage"/>
+            <center>
+                <ScrollPane>
+                    <ImageView fx:id = "originalImage"/>
+                </ScrollPane>
+            </center>
 </BorderPane>
