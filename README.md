@@ -1,6 +1,10 @@
-# Changelog
+# HOW TO START APPLICATION
+1. First go to /backend and execute `./gradlew run`
+2. In new terminal windows go to /frontend directory and also run `./gradlew run`
 
-- To run application execute command `./gradlew run` in backend directory
+Alternatively you can open these 2 Gradle Projects in 2 IntelliJ windows and run them from IntelliJ
+
+# Changelog
 
 ## 12.12.2023
 
@@ -60,3 +64,11 @@ Our application use 2 endpoints for communication:
 - Fixed Image Scaler
 - Created Request and Response classes for endpoints
 - Changed test names
+
+## 04.12.2023
+- Created beautiful UI which can send many photos (i.e. one photo)
+- Added new endpoint for getting original image size
+- Implemented polling mechanism which asks for any new images, and updates
+- Frontend Cache mechanism which prevents from disappearing thumbnails when size changes.
+- When thumbnail clicked, new window with original image appears.
+- New images have thumbnail_placeholder which get updated as soon as polling mechanism gets scaled thumbnail.
