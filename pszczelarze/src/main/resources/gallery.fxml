@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -20,15 +18,7 @@
             <Label fx:id="uploadImagesLabel"/>
             <Region HBox.hgrow="ALWAYS"/>
             <Label styleClass="select-label" text="Wybierz rozmiar miniatur: "/>
-            <ChoiceBox styleClass="navbar-select" value="SMALL" fx:id="sizeSelect" onAction="#thumbnailSizeChanged">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="SMALL" />
-                        <String fx:value="MEDIUM"/>
-                        <String fx:value="LARGE"/>
-                    </FXCollections>
-                </items>
-            </ChoiceBox>
+            <ComboBox styleClass="navbar-select" fx:id="sizeSelect" onAction="#thumbnailSizeChanged"/>
         </HBox>
     </top>
     <center>

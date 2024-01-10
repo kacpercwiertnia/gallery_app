@@ -1,12 +1,14 @@
 package pl.edu.agh.to2.gallery;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -33,6 +35,7 @@ import java.io.InputStream;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -41,14 +44,13 @@ public class GalleryControler {
     @FXML
     private GridPane thumbnailGrid;
     @FXML
-    private ChoiceBox sizeSelect;
+    private ComboBox<ThumbnailSize> sizeSelect;
     @FXML
     private Label uploadImagesLabel;
     private final CashedThumbnails thumbnails;
     private Map<Integer,ImageView> selectedThumbnails;
     private List<Integer> waitingIds;
     private List<String> uploadedImages;
-    private int numOfImages = 0;
     private String placeholderUrl = "placeholder_small.gif";
     private Thread scheduler;
 
@@ -65,7 +67,6 @@ public class GalleryControler {
     public void uploadImageButtonClicked(ActionEvent actionEvent){
         FileChooser fileChooser = new FileChooser();
         File file = fileChooser.showOpenDialog(null);
-        String size = sizeSelect.getValue().toString();
 
         try {
             byte[] fileContent = Files.readAllBytes(file.toPath());
@@ -118,7 +119,7 @@ public class GalleryControler {
     public void refreshThumbnailsLists(){
         refreshIdsLists();
 
-        if (waitingIds.size() == 0) return;
+        if (waitingIds.isEmpty()) return;
 
         ThumbnailsRequest thumbnailsRequest = new ThumbnailsRequest(waitingIds, sizeSelect.getValue().toString());
         thumbnailsRequest.build();
@@ -151,26 +152,15 @@ public class GalleryControler {
     @FXML
     public void thumbnailSizeChanged(ActionEvent event){
         thumbnailGrid.getChildren().clear();
-        switch(sizeSelect.getValue().toString()){
-            case "SMALL":
-                this.waitingIds = thumbnails.getWaitingImagesIds(ThumbnailSize.SMALL);
-                this.selectedThumbnails = thumbnails.getThumbnails(ThumbnailSize.SMALL);
-                placeholderUrl = "placeholder_small.gif";
-                break;
-            case "MEDIUM":
-                this.waitingIds = thumbnails.getWaitingImagesIds(ThumbnailSize.MEDIUM);
-                this.selectedThumbnails = thumbnails.getThumbnails(ThumbnailSize.MEDIUM);
-                placeholderUrl = "placeholder_medium.gif";
-                break;
-            case "LARGE":
-                this.waitingIds = thumbnails.getWaitingImagesIds(ThumbnailSize.LARGE);
-                this.selectedThumbnails = thumbnails.getThumbnails(ThumbnailSize.LARGE);
-                placeholderUrl = "placeholder_large.gif";
-                break;
-            default:
-                break;
+        this.waitingIds = thumbnails.getWaitingImagesIds(sizeSelect.getValue());
+        this.selectedThumbnails = thumbnails.getThumbnails(sizeSelect.getValue());
+
+        switch(sizeSelect.getValue()){
+            case SMALL -> placeholderUrl = "placeholder_small.gif";
+            case MEDIUM -> placeholderUrl = "placeholder_medium.gif";
+            case LARGE -> placeholderUrl = "placeholder_large.gif";
         }
-        numOfImages = 0;
+
         refreshThumbnailsLists();
         redrawThumbnailGrid();
     }
@@ -179,7 +169,6 @@ public class GalleryControler {
         selectedThumbnails.forEach((K,V)->{
             if (!thumbnailGrid.getChildren().contains(V)) {
                 thumbnailGrid.getChildren().add(V);
-                numOfImages++;
             }
         });
     }
@@ -208,10 +197,16 @@ public class GalleryControler {
                 controller.initialize(image);
             }
         } catch (IOException e){
-            e.printStackTrace();
-            Main.log.warning("Failed to load FXML file." );
+            Main.log.warning("Failed to load FXML file: " + e.getMessage() );
         }
 
+    }
+
+    @FXML
+    public void initialize(){
+        ObservableList<ThumbnailSize> thumbnailSizes = FXCollections.observableList(Arrays.stream(ThumbnailSize.values()).toList());
+        sizeSelect.setItems(thumbnailSizes);
+        sizeSelect.setValue(ThumbnailSize.SMALL);
     }
 
 }
