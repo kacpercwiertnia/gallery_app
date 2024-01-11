@@ -47,7 +47,7 @@ public class GalleryControler {
     private final CashedThumbnails thumbnails;
     private Map<Integer,ImageView> selectedThumbnails;
     private List<Integer> waitingIds;
-    private List<String> uploadedImages;
+    private final List<String> uploadedImages;
     private String placeholderUrl = "placeholder_small.gif";
     private Thread scheduler;
 
@@ -58,6 +58,13 @@ public class GalleryControler {
         this.selectedThumbnails = thumbnails.getThumbnails(ThumbnailSize.SMALL);
         this.waitingIds = thumbnails.getWaitingImagesIds(ThumbnailSize.SMALL);
         this.uploadedImages = new ArrayList<>();
+    }
+
+    @FXML
+    public void initialize(){
+        ObservableList<ThumbnailSize> thumbnailSizes = FXCollections.observableList(Arrays.stream(ThumbnailSize.values()).toList());
+        sizeSelect.setItems(thumbnailSizes);
+        sizeSelect.setValue(ThumbnailSize.SMALL);
     }
 
     @FXML
@@ -75,6 +82,22 @@ public class GalleryControler {
         }
     }
 
+    @FXML
+    public void thumbnailSizeChanged(ActionEvent event){
+        thumbnailGrid.getChildren().clear();
+        this.waitingIds = thumbnails.getWaitingImagesIds(sizeSelect.getValue());
+        this.selectedThumbnails = thumbnails.getThumbnails(sizeSelect.getValue());
+
+        switch(sizeSelect.getValue()){
+            case SMALL -> placeholderUrl = "placeholder_small.gif";
+            case MEDIUM -> placeholderUrl = "placeholder_medium.gif";
+            case LARGE -> placeholderUrl = "placeholder_large.gif";
+        }
+
+        refreshThumbnailsLists();
+        redrawThumbnailGrid();
+    }
+
     public void sendUploadedImages(ActionEvent actionEvent){
         try {
             ImageService.postImage(uploadedImages);
@@ -87,10 +110,8 @@ public class GalleryControler {
 
     }
 
-    public void refreshIdsLists(){ //todo
-
+    public void refreshIdsLists(){
         try{
-
             var imagesIds = ImageService.getImageIds();
 
             for(int i = 0; i < imagesIds.length(); i++){
@@ -140,22 +161,6 @@ public class GalleryControler {
 
     }
 
-    @FXML
-    public void thumbnailSizeChanged(ActionEvent event){
-        thumbnailGrid.getChildren().clear();
-        this.waitingIds = thumbnails.getWaitingImagesIds(sizeSelect.getValue());
-        this.selectedThumbnails = thumbnails.getThumbnails(sizeSelect.getValue());
-
-        switch(sizeSelect.getValue()){
-            case SMALL -> placeholderUrl = "placeholder_small.gif";
-            case MEDIUM -> placeholderUrl = "placeholder_medium.gif";
-            case LARGE -> placeholderUrl = "placeholder_large.gif";
-        }
-
-        refreshThumbnailsLists();
-        redrawThumbnailGrid();
-    }
-
     private void redrawThumbnailGrid(){
         selectedThumbnails.forEach((K,V)->{
             if (!thumbnailGrid.getChildren().contains(V)) {
@@ -188,14 +193,5 @@ public class GalleryControler {
         catch (IOException e){
             Main.log.warning("Failed to load FXML file: " + e.getMessage() );
         }
-
     }
-
-    @FXML
-    public void initialize(){
-        ObservableList<ThumbnailSize> thumbnailSizes = FXCollections.observableList(Arrays.stream(ThumbnailSize.values()).toList());
-        sizeSelect.setItems(thumbnailSizes);
-        sizeSelect.setValue(ThumbnailSize.SMALL);
-    }
-
 }
