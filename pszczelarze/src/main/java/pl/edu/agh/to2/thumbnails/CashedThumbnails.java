@@ -1,9 +1,7 @@
 package pl.edu.agh.to2.thumbnails;
 
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
