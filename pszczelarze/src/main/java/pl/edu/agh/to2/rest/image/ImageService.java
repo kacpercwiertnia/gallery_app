@@ -2,6 +2,7 @@ package pl.edu.agh.to2.rest.image;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import pl.edu.agh.to2.rest.AbstractService;
 import pl.edu.agh.to2.rest.StatusNotOkException;
 import pl.edu.agh.to2.rest.image.requests.GetImageRequest;
 import pl.edu.agh.to2.rest.image.requests.ImageIdsRequest;
@@ -11,9 +12,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.List;
 
-public class ImageService {
-    private static final HttpClient client = HttpClient.newHttpClient();
-
+public class ImageService extends AbstractService {
     public static String getImage (int id) throws StatusNotOkException, RuntimeException{
         var request = new GetImageRequest(id).build();
         try{
@@ -47,12 +46,6 @@ public class ImageService {
         }
         catch(Exception ex){
             throw new RuntimeException(ex);
-        }
-    }
-
-    private static <T> void checkIfOk(HttpResponse<T> response) throws StatusNotOkException{
-        if (response.statusCode() != 200){
-            throw new StatusNotOkException(String.valueOf(response.statusCode()));
         }
     }
 }
