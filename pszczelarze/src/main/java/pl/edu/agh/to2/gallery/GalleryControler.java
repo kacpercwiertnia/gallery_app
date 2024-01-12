@@ -16,14 +16,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import pl.edu.agh.to2.Main;
 import pl.edu.agh.to2.image.OriginalImageController;
-import pl.edu.agh.to2.rest.GetImageRequest;
-import pl.edu.agh.to2.rest.ImageIdsRequest;
-import pl.edu.agh.to2.rest.PostImageRequest;
-import pl.edu.agh.to2.rest.ThumbnailsRequest;
+import pl.edu.agh.to2.rest.StatusNotOkException;
+import pl.edu.agh.to2.rest.image.ImageService;
+import pl.edu.agh.to2.rest.thumbnails.ThumbnailService;
 import pl.edu.agh.to2.thumbnails.CashedThumbnails;
 import pl.edu.agh.to2.thumbnails.ThumbnailSize;
 
@@ -32,7 +30,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +47,7 @@ public class GalleryControler {
     private final CashedThumbnails thumbnails;
     private Map<Integer,ImageView> selectedThumbnails;
     private List<Integer> waitingIds;
-    private List<String> uploadedImages;
+    private final List<String> uploadedImages;
     private String placeholderUrl = "placeholder_small.gif";
     private Thread scheduler;
 
@@ -61,6 +58,13 @@ public class GalleryControler {
         this.selectedThumbnails = thumbnails.getThumbnails(ThumbnailSize.SMALL);
         this.waitingIds = thumbnails.getWaitingImagesIds(ThumbnailSize.SMALL);
         this.uploadedImages = new ArrayList<>();
+    }
+
+    @FXML
+    public void initialize(){
+        ObservableList<ThumbnailSize> thumbnailSizes = FXCollections.observableList(Arrays.stream(ThumbnailSize.values()).toList());
+        sizeSelect.setItems(thumbnailSizes);
+        sizeSelect.setValue(ThumbnailSize.SMALL);
     }
 
     @FXML
@@ -75,77 +79,6 @@ public class GalleryControler {
             uploadImagesLabel.setText("Wybrane obrazki: " + uploadedImages.size());
         } catch (IOException e) {
             Main.log.info(e.getMessage());
-        }
-    }
-
-    public void sendUploadedImages(ActionEvent actionEvent){
-        PostImageRequest postImageRequest = new PostImageRequest(uploadedImages);
-        postImageRequest.build();
-
-        HttpResponse<String> response = postImageRequest.getResponse();
-
-        if(response != null && response.statusCode() == 200){
-            refreshIdsLists();
-        }
-        uploadedImages.clear();
-        uploadImagesLabel.setText("");
-    }
-
-    public void refreshIdsLists(){
-        ImageIdsRequest imageIdsRequest = new ImageIdsRequest();
-        imageIdsRequest.build();
-
-        HttpResponse<String> response = imageIdsRequest.getResponse();
-
-        if(response != null && response.statusCode() == 200){
-            JSONObject jsonObject = new JSONObject(response.body());
-            JSONArray imagesIds = (JSONArray) jsonObject.get("imagesIds");
-
-            for(int i = 0; i < imagesIds.length(); i++){
-                int id = imagesIds.getInt(i);
-
-                if(!selectedThumbnails.containsKey(id) && !waitingIds.contains(id)){
-                    waitingIds.add(id);
-                    File file2 = new File("src/main/resources/images/"+placeholderUrl);
-                    Image image = new Image(file2.toURI().toString());
-                    ImageView imageView = new ImageView(image);
-                    selectedThumbnails.put(id, imageView);
-                    thumbnailGrid.add(selectedThumbnails.get(id), (selectedThumbnails.size()-1)%4, (selectedThumbnails.size()-1)/4);
-                }
-            }
-        }
-    }
-
-    public void refreshThumbnailsLists(){
-        refreshIdsLists();
-
-        if (waitingIds.isEmpty()) return;
-
-        ThumbnailsRequest thumbnailsRequest = new ThumbnailsRequest(waitingIds, sizeSelect.getValue().toString());
-        thumbnailsRequest.build();
-
-        HttpResponse<String> response = thumbnailsRequest.getResponse();
-
-        if(response != null && response.statusCode() == 200){
-            JSONObject jsonObject = new JSONObject(response.body());
-            JSONArray thumbnails = (JSONArray) jsonObject.get("thumbnails");
-
-            for(int i = 0; i < thumbnails.length(); i++){
-                JSONObject thumbnail = thumbnails.getJSONObject(i);
-                int id = thumbnail.getInt("imageId");
-                String image = thumbnail.getString("basedImage");
-                boolean status = thumbnail.getBoolean("isCorrect");
-
-                if(status){
-                    waitingIds.remove(Integer.valueOf(id));
-                    InputStream is = Base64.getDecoder().wrap(new ByteArrayInputStream(image.getBytes()));
-                    ImageView imageView = selectedThumbnails.get(id);
-                    imageView.setImage(new Image(is));
-                    imageView.addEventHandler(MouseEvent.MOUSE_CLICKED,event->{
-                        seeOriginalImage(event,id);
-                    });
-                }
-            }
         }
     }
 
@@ -165,6 +98,69 @@ public class GalleryControler {
         redrawThumbnailGrid();
     }
 
+    public void sendUploadedImages(ActionEvent actionEvent){
+        try {
+            ImageService.postImage(uploadedImages);
+            refreshIdsLists();
+        }catch(StatusNotOkException ex){
+            Main.log.warning("Request for posting an image failed. Reason: " + ex.getMessage());
+        }
+        uploadedImages.clear();
+        uploadImagesLabel.setText("");
+
+    }
+
+    public void refreshIdsLists(){
+        try{
+            var imagesIds = ImageService.getImageIds();
+
+            for(int i = 0; i < imagesIds.length(); i++){
+                int id = imagesIds.getInt(i);
+
+                if(!selectedThumbnails.containsKey(id) && !waitingIds.contains(id)){
+                    waitingIds.add(id);
+                    File file2 = new File("src/main/resources/images/"+placeholderUrl);
+                    Image image = new Image(file2.toURI().toString());
+                    ImageView imageView = new ImageView(image);
+                    selectedThumbnails.put(id, imageView);
+                    thumbnailGrid.add(selectedThumbnails.get(id), (selectedThumbnails.size()-1)%4, (selectedThumbnails.size()-1)/4);
+                }
+            }
+        }catch(StatusNotOkException ex){
+            Main.log.warning("Request for refreshing id list failed. Reason: " + ex.getMessage());
+        }
+
+    }
+
+    public void refreshThumbnailsLists(){
+        refreshIdsLists();
+
+        if (waitingIds.isEmpty()) return;
+        try{
+            var thumbnails = ThumbnailService.getThumbnailsRequest(waitingIds, sizeSelect.getValue().toString());
+
+            for(int i = 0; i < thumbnails.length(); i++){
+                JSONObject thumbnail = thumbnails.getJSONObject(i);
+                int id = thumbnail.getInt("imageId");
+                String image = thumbnail.getString("basedImage");
+                boolean status = thumbnail.getBoolean("isCorrect");
+
+                if(status){
+                    waitingIds.remove(Integer.valueOf(id));
+                    InputStream is = Base64.getDecoder().wrap(new ByteArrayInputStream(image.getBytes()));
+                    ImageView imageView = selectedThumbnails.get(id);
+                    imageView.setImage(new Image(is));
+                    imageView.addEventHandler(MouseEvent.MOUSE_CLICKED,event->{
+                        seeOriginalImage(event,id);
+                    });
+                }
+            }
+        }catch(StatusNotOkException ex){
+            Main.log.warning("Request for refreshing thumbnail list failed. Reason: " + ex.getMessage());
+        }
+
+    }
+
     private void redrawThumbnailGrid(){
         selectedThumbnails.forEach((K,V)->{
             if (!thumbnailGrid.getChildren().contains(V)) {
@@ -173,40 +169,29 @@ public class GalleryControler {
         });
     }
 
-    private void seeOriginalImage(MouseEvent event, int imageId) {
+    private void seeOriginalImage(MouseEvent event, int imageId) { //done
         try{
-            var request = new GetImageRequest(imageId);
-            request.build();
-
-            HttpResponse<String> response = request.getResponse();
-            if (response.statusCode()==200){
-                Image image;
-                String encodedImage = new JSONObject(response.body()).getString("image");
-                byte[] byteImage = Base64.getDecoder().decode(encodedImage);
-                try (InputStream is = new BufferedInputStream(new ByteArrayInputStream(byteImage))){
-                    image = new Image(is);
-                }
-                FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("originalImage.fxml"));
-                Parent root = loader.load();
-                OriginalImageController controller = loader.getController();
-
-                Scene scene = new Scene(root,image.getWidth(),image.getHeight());
-                Stage stage = new Stage();
-                stage.setScene(scene);
-                stage.show();
-                controller.initialize(image);
+            var encodedImage = ImageService.getImage(imageId);
+            Image image;
+            byte[] byteImage = Base64.getDecoder().decode(encodedImage);
+            try (InputStream is = new BufferedInputStream(new ByteArrayInputStream(byteImage))){
+                image = new Image(is);
             }
-        } catch (IOException e){
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("originalImage.fxml"));
+            Parent root = loader.load();
+            OriginalImageController controller = loader.getController();
+
+            Scene scene = new Scene(root,image.getWidth(),image.getHeight());
+            Stage stage = new Stage();
+            stage.setScene(scene);
+            stage.show();
+            controller.initialize(image);
+
+        }catch (StatusNotOkException ex){
+            Main.log.warning("Request for getting original message failed, reason: " + ex.getMessage());
+        }
+        catch (IOException e){
             Main.log.warning("Failed to load FXML file: " + e.getMessage() );
         }
-
     }
-
-    @FXML
-    public void initialize(){
-        ObservableList<ThumbnailSize> thumbnailSizes = FXCollections.observableList(Arrays.stream(ThumbnailSize.values()).toList());
-        sizeSelect.setItems(thumbnailSizes);
-        sizeSelect.setValue(ThumbnailSize.SMALL);
-    }
-
 }
