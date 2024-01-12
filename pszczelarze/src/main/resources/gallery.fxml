@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -10,13 +10,14 @@
             fx:controller="pl.edu.agh.to2.gallery.GalleryControler"
             styleClass="gallery-pane"
             stylesheets="styles/gallery.css"
-            prefHeight="400.0" prefWidth="600.0">
+            prefHeight="400.0" prefWidth="800.0">
     <top>
         <HBox styleClass="navbar">
             <Button styleClass="upload-button" text="Prześlij zdjęcia" onAction="#uploadImageButtonClicked"/>
             <Button styleClass="upload-button" text="Wyślij" onAction="#sendUploadedImages"/>
             <Label fx:id="uploadImagesLabel"/>
             <Region HBox.hgrow="ALWAYS"/>
+            <Button styleClass="upload-button" text="Usun zdjecia" onAction="#clearUploadedImages"/>
             <Label styleClass="select-label" text="Wybierz rozmiar miniatur: "/>
             <ComboBox styleClass="navbar-select" fx:id="sizeSelect" onAction="#thumbnailSizeChanged"/>
         </HBox>
