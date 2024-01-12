@@ -1,15 +1,53 @@
 .gallery-pane{
     -fx-padding: 8;
     -fx-spacing: 8;
+    -fx-font-family: Futura;
+    -fx-background-color: #434548;
 }
 .navbar{
-    -fx-padding: 8;
+    -fx-alignment: "center";
+    -fx-padding: 0 0 8 0;
     -fx-spacing: 8;
-    -fx-alignment: "center";
 }
-.navber .select-label{
-    -fx-pref-width: 150;
+.select-label{
+    -fx-pref-width: 162;
 }
-#thumbnailGrid {
-    -fx-alignment: "center";
+.label{
+    -fx-text-fill: #fff;
+}
+.button{
+    -fx-background-color: transparent;
+    -fx-border-color: #fff;
+    -fx-border-radius: 5;
+    -fx-text-fill: #fff;
+}
+.button:hover{
+    -fx-background-color: #fff;
+    -fx-text-fill: #000;
+}
+.combo-box{
+    -fx-background-color: transparent;
+    -fx-border-color: #fff;
+    -fx-border-radius: 5;
+}
+.combo-box .list-cell{
+    -fx-text-fill: #fff;
+}
+.combo-box:hover{
+    -fx-background-color: #fff;
+}
+.combo-box:hover .list-cell{
+    -fx-text-fill: #000;
+}
+.LARGE{
+    -fx-padding: 8 27.25 0 27.25;
+    -fx-hgap: 27.25;
+}
+.MEDIUM{
+    -fx-padding: 8 36.8 0 36.8;
+    -fx-hgap: 36.8;
+}
+.SMALL{
+    -fx-padding: 8 3.09 0 3.09;
+    -fx-hgap: 3.09;
 }

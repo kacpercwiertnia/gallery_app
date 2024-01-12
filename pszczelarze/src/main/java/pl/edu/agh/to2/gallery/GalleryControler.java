@@ -14,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONObject;
@@ -50,6 +51,7 @@ public class GalleryControler {
     private final List<String> uploadedImages;
     private String placeholderUrl = "placeholder_small.gif";
     private final Thread scheduler;
+    private int thumbnailsPerRow = 10;
 
     public GalleryControler() {
         this.scheduler = new PollingScheduler(this);
@@ -85,13 +87,24 @@ public class GalleryControler {
     @FXML
     public void thumbnailSizeChanged(ActionEvent event) {
         thumbnailGrid.getChildren().clear();
+        thumbnailGrid.getStyleClass().clear();
         this.waitingIds = thumbnails.getWaitingImagesIds(sizeSelect.getValue());
         this.selectedThumbnails = thumbnails.getThumbnails(sizeSelect.getValue());
+        thumbnailGrid.getStyleClass().add(sizeSelect.getValue().toString());
 
         switch (sizeSelect.getValue()) {
-            case SMALL -> placeholderUrl = "placeholder_small.gif";
-            case MEDIUM -> placeholderUrl = "placeholder_medium.gif";
-            case LARGE -> placeholderUrl = "placeholder_large.gif";
+            case SMALL -> {
+                placeholderUrl = "placeholder_small.gif";
+                thumbnailsPerRow = 10;
+            }
+            case MEDIUM -> {
+                placeholderUrl = "placeholder_medium.gif";
+                thumbnailsPerRow = 4;
+            }
+            case LARGE -> {
+                placeholderUrl = "placeholder_large.gif";
+                thumbnailsPerRow = 3;
+            }
         }
 
         refreshThumbnailsLists();
@@ -114,7 +127,6 @@ public class GalleryControler {
         }
         uploadedImages.clear();
         uploadImagesLabel.setText("");
-
     }
 
     public void refreshIdsLists() {
@@ -130,7 +142,7 @@ public class GalleryControler {
                     Image image = new Image(file2.toURI().toString());
                     ImageView imageView = new ImageView(image);
                     selectedThumbnails.put(id, imageView);
-                    thumbnailGrid.add(selectedThumbnails.get(id), (selectedThumbnails.size() - 1) % 4, (selectedThumbnails.size() - 1) / 4);
+                    thumbnailGrid.add(selectedThumbnails.get(id), (selectedThumbnails.size() - 1) % thumbnailsPerRow, (selectedThumbnails.size() - 1) / thumbnailsPerRow);
                 }
             }
         } catch (StatusNotOkException ex) {
@@ -181,7 +193,7 @@ public class GalleryControler {
         });
     }
 
-    private void seeOriginalImage(MouseEvent event, int imageId) { //done
+    private void seeOriginalImage(MouseEvent event, int imageId) {
         try {
             var encodedImage = ImageService.getImage(imageId);
             Image image;

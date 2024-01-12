@@ -1,30 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.collections.FXCollections?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="pl.edu.agh.to2.gallery.GalleryControler"
             styleClass="gallery-pane"
             stylesheets="styles/gallery.css"
-            prefHeight="400.0" prefWidth="800.0">
+            prefHeight="800.0" prefWidth="800.0">
     <top>
         <HBox styleClass="navbar">
-            <Button styleClass="upload-button" text="Prześlij zdjęcia" onAction="#uploadImageButtonClicked"/>
-            <Button styleClass="upload-button" text="Wyślij" onAction="#sendUploadedImages"/>
+            <Button text="Prześlij zdjęcia" onAction="#uploadImageButtonClicked"/>
+            <Button text="Wyślij" onAction="#sendUploadedImages"/>
             <Label fx:id="uploadImagesLabel"/>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button styleClass="upload-button" text="Usun zdjecia" onAction="#clearUploadedImages"/>
+            <Button text="Wyczyść kolejkę" onAction="#clearUploadedImages"/>
             <Label styleClass="select-label" text="Wybierz rozmiar miniatur: "/>
-            <ComboBox styleClass="navbar-select" fx:id="sizeSelect" onAction="#thumbnailSizeChanged"/>
+            <ComboBox fx:id="sizeSelect" onAction="#thumbnailSizeChanged"/>
         </HBox>
     </top>
     <center>
         <ScrollPane>
-            <GridPane fx:id="thumbnailGrid" hgap="5" vgap="5">
+            <GridPane fx:id="thumbnailGrid" vgap="5" styleClass="SMALL">
             </GridPane>
         </ScrollPane>
     </center>
