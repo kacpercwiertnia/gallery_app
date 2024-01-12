@@ -65,10 +65,19 @@ Our application use 2 endpoints for communication:
 - Created Request and Response classes for endpoints
 - Changed test names
 
-## 04.12.2023
+## 04.01.2024
 - Created beautiful UI which can send many photos (i.e. one photo)
 - Added new endpoint for getting original image size
 - Implemented polling mechanism which asks for any new images, and updates
 - Frontend Cache mechanism which prevents from disappearing thumbnails when size changes.
 - When thumbnail clicked, new window with original image appears.
 - New images have thumbnail_placeholder which get updated as soon as polling mechanism gets scaled thumbnail.
+
+## 11.01.2024
+- Frontend allows to remove uploaded photos
+- Frontend now don't send request when no photo is uploaded
+- Frontend displays failed images and don't poll for them
+- Polling scheduler don't use Thread.sleep() (even though I liked this)
+- ChoiceBox now uses Enum to display possible options of size
+- God Controller no more 
+
