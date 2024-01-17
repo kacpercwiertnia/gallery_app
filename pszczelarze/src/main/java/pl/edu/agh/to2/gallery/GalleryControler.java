@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -42,6 +43,12 @@ public class GalleryControler {
     private ComboBox<ThumbnailSize> sizeSelect;
     @FXML
     private Label uploadImagesLabel;
+    @FXML
+    private Button prevPage;
+    @FXML
+    private Button nextPage;
+    @FXML
+    private Label pageNumber;
     private final List<String> uploadedImages;
     private String placeholderUrl = "placeholder_small.gif";
     private final Thread scheduler;
@@ -69,6 +76,7 @@ public class GalleryControler {
         ObservableList<ThumbnailSize> thumbnailSizes = FXCollections.observableList(Arrays.stream(ThumbnailSize.values()).toList());
         sizeSelect.setItems(thumbnailSizes);
         sizeSelect.setValue(ThumbnailSize.SMALL);
+        setPageChangeComponents();
     }
 
     @FXML
@@ -81,6 +89,7 @@ public class GalleryControler {
             String stringImage = Base64.getEncoder().encodeToString(fileContent);
             uploadedImages.add(stringImage);
             uploadImagesLabel.setText("Wybrane obrazki: " + uploadedImages.size());
+            setPageChangeComponents();
         } catch (IOException e) {
             Main.log.info(e.getMessage());
         }
@@ -88,9 +97,8 @@ public class GalleryControler {
 
     @FXML
     public void thumbnailSizeChanged(ActionEvent event) {
-        thumbnailGrid.getChildren().clear();
-        thumbnailGrid.getStyleClass().clear();
-        thumbnailGrid.getStyleClass().add(sizeSelect.getValue().toString());
+        currentPage = 0;
+        clearImages();
 
         switch (sizeSelect.getValue()) {
             case SMALL -> {
@@ -106,18 +114,32 @@ public class GalleryControler {
                 thumbnailsPerRow = 3;
             }
         }
-        currentPage = 0;
-        currentImages.clear();
-        currentImagesOnPage = 0;
-        freePlaceholders.clear();
+
         refreshThumbnailsLists();
-        //TODO: change onSize event
+        setPageChangeComponents();
     }
 
     @FXML
     public void clearUploadedImages(ActionEvent actionEvent) {
         uploadedImages.clear();
         uploadImagesLabel.setText("");
+    }
+
+    @FXML
+    public void goToPrevPage(ActionEvent actionEvent){
+
+        currentPage-=1;
+        setPageChangeComponents();
+        clearImages();
+        refreshThumbnailsLists();
+    }
+
+    @FXML
+    public void goToNextPage(ActionEvent actionEvent){
+        currentPage+=1;
+        setPageChangeComponents();
+        clearImages();
+        refreshThumbnailsLists();
     }
 
     public void sendUploadedImages(ActionEvent actionEvent) {
@@ -222,6 +244,31 @@ public class GalleryControler {
         } catch (IOException e) {
             Main.log.warning("Failed to load FXML file: " + e.getMessage());
         }
+    }
+
+    private boolean checkIfNextPageButtonVisible(){
+        try{
+            var total = ImageService.getTotalImagesInDirectory(currentPath);
+            return total > (currentPage+1)*getPageSize();
+        }catch(StatusNotOkException ex){
+            Main.log.info(ex.getMessage());
+            return false;
+        }
+    }
+
+    private void setPageChangeComponents(){
+        nextPage.setVisible(checkIfNextPageButtonVisible());
+        pageNumber.setText("Strona " + (currentPage + 1));
+        prevPage.setVisible(!(currentPage==0));
+    }
+
+    private void clearImages(){
+        currentImages.clear();
+        currentImagesOnPage = 0;
+        freePlaceholders.clear();
+        thumbnailGrid.getChildren().clear();
+        thumbnailGrid.getStyleClass().clear();
+        thumbnailGrid.getStyleClass().add(sizeSelect.getValue().toString());
     }
 
     private int getPageSize(){
