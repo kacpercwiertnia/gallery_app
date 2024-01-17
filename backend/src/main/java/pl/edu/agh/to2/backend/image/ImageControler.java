@@ -1,14 +1,10 @@
 package pl.edu.agh.to2.backend.image;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.edu.agh.to2.backend.rest.ImagesIdsResponse;
 import pl.edu.agh.to2.backend.rest.OriginalImageReponse;
 import pl.edu.agh.to2.backend.rest.SendImagesRequest;
 import pl.edu.agh.to2.backend.rest.TotalInDirectoryResponse;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/image")
@@ -27,12 +23,6 @@ public class ImageControler {
             return ResponseEntity.badRequest().body("Not a valid encoded image sent for at least one item.");
         }
         return ResponseEntity.ok().body("Success");
-    }
-
-    @GetMapping
-    public ResponseEntity<ImagesIdsResponse> getImagesIds() { //refactor/remove
-        var imagesIds = imageService.getImagesIds();
-        return ResponseEntity.ok(new ImagesIdsResponse(imagesIds));
     }
 
     @GetMapping("/{id}")

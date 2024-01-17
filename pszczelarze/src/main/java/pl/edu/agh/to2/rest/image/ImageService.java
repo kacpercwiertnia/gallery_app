@@ -26,19 +26,6 @@ public class ImageService extends AbstractService {
         }
     }
 
-    public static JSONArray getImageIds() throws StatusNotOkException{
-        var request = new ImageIdsRequest().build();
-        try{
-            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            checkIfOk(response);
-            JSONObject jsonObject = new JSONObject(response.body());
-            return (JSONArray) jsonObject.get("imagesIds");
-        }
-        catch(Exception ex){
-            throw new RuntimeException(ex);
-        }
-    }
-
     public static void postImage(List<String> images) throws StatusNotOkException{
         var request = new PostImageRequest(images).build();
         try{
