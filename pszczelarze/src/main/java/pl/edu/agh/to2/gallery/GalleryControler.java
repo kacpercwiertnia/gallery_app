@@ -48,12 +48,12 @@ public class GalleryControler {
     private final CashedThumbnails thumbnails;
     private Map<Integer, ImageView> selectedThumbnails;
     private List<Integer> waitingIds;
-    private final Map<String,List<String>> uploadedImages;
+    private final Map<String, List<String>> uploadedImages;
     private String placeholderUrl = "placeholder_small.gif";
     private final Thread scheduler;
     private int thumbnailsPerRow = 10;
     private final ZipHandler zipHandler;
-    private final String currentPath = "/";
+    private String currentPath = "/";
 
     public GalleryControler() {
         this.scheduler = new PollingScheduler(this);
@@ -83,19 +83,21 @@ public class GalleryControler {
                 Map<String, List<String>> imageMap = zipHandler.getImagesFromZip(file);
 
                 for (Map.Entry<String, List<String>> entry : imageMap.entrySet()) {
-                    if (uploadedImages.containsKey(entry.getKey())){
-                        uploadedImages.getOrDefault(entry.getKey(),null).addAll(entry.getValue());
+
+                    String fullPath = currentPath.equals("/") ? "/" + entry.getKey() : currentPath+"/"+entry.getKey();
+                    if (uploadedImages.containsKey(fullPath)) {
+                        uploadedImages.get(fullPath).addAll(entry.getValue());
                     } else {
-                        uploadedImages.put(entry.getKey(), entry.getValue());
+                        uploadedImages.put(fullPath, entry.getValue());
                     }
                 }
             } else if (file != null) {
                 byte[] fileContent = Files.readAllBytes(file.toPath());
                 String stringImage = Base64.getEncoder().encodeToString(fileContent);
-                if (uploadedImages.containsKey(currentPath)){
+                if (uploadedImages.containsKey(currentPath)) {
                     uploadedImages.get(currentPath).add(stringImage);
                 } else {
-                    uploadedImages.put(currentPath,List.of(stringImage));
+                    uploadedImages.put(currentPath, List.of(stringImage));
                 }
             }
             uploadImagesLabel.setText("Wybrane obrazki: " + uploadedImages.size());

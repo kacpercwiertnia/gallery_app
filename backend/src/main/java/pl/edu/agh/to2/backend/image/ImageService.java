@@ -47,18 +47,21 @@ public class ImageService {
 
         for (Map.Entry<String, List<String>> entry:images.entrySet()){
             dir = directoryRepository.findByPath(entry.getKey());
-            String path = "/" + StringUtils.chop(entry.getKey());
+            String path = entry.getKey().equals("/") ? "/" : StringUtils.chop(entry.getKey());
             String parent = getParent(path);
 
             if (dir == null){
                 dir = new Directory(path,parent);
                 directoryRepository.save(dir);
             }
+
             for (String encodedImage : entry.getValue()) {
                 byte[] byteImage = Base64.getDecoder().decode(encodedImage);
                 try (InputStream is = new BufferedInputStream(new ByteArrayInputStream(byteImage))) {
                     String mimetype = URLConnection.guessContentTypeFromStream(is);
-
+                    if (mimetype == null){
+                        continue;
+                    }
                     if (!ACCEPTED_FORMATS.contains(mimetype)) {
                         throw new IllegalArgumentException("Not a valid image");
                     }
@@ -94,6 +97,6 @@ public class ImageService {
     private String getParent(String path){
         int slashes = StringUtils.countMatches(path,"/");
 
-        return slashes == 1 ? "/" : path.substring(0,path.lastIndexOf("/"));
+        return slashes <= 1 ? "/" : path.substring(0,path.lastIndexOf("/"));
     }
 }
