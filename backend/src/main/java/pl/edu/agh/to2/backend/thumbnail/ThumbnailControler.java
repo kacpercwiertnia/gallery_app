@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pl.edu.agh.to2.backend.rest.ThumbnailsPagedRequest;
 import pl.edu.agh.to2.backend.rest.ThumbnailsRequest;
 import pl.edu.agh.to2.backend.rest.ThumbnailsResponse;
 
@@ -19,7 +20,8 @@ public class ThumbnailControler {
         this.thumbnailService = thumbnailService;
     }
 
-    @PostMapping
+    @PostMapping //TODO: think why it is post and why not get (consult with others)
+                    //TODO: remove
     public ResponseEntity<ThumbnailsResponse> getRequestedThumbnails(@RequestBody ThumbnailsRequest request){
         var imagesIds = request.imagesIds();
         var size = request.size();
@@ -28,7 +30,20 @@ public class ThumbnailControler {
             return ResponseEntity.ok().body(new ThumbnailsResponse(thumbnails, "Success"));
         }
         catch(IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(new ThumbnailsResponse(null, "Unknown size value passed: " + size.toString()));
+            return ResponseEntity.badRequest().body(new ThumbnailsResponse(null,
+                    "Unknown size value passed: " + size.toString()));
+        }
+    }
+
+    @PostMapping(path = "/paged")
+    public ResponseEntity<ThumbnailsResponse> getThumbnails(@RequestBody ThumbnailsPagedRequest request){
+        try{
+            var thumbnails = thumbnailService.getThumbnailsBySizeForCurrentDirectory(request.path()
+                    , request.size(), request.page(), request.offset());
+            return ResponseEntity.ok(new ThumbnailsResponse(thumbnails, "Success"));
+        }catch(IllegalArgumentException e){
+            return ResponseEntity.badRequest().body(new ThumbnailsResponse(null,
+                    "Unknown size value passed: " + request.size().toString()));
         }
     }
 }

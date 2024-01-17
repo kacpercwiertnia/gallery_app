@@ -34,7 +34,7 @@ public class ImageControler {
     }
 
     @GetMapping
-    public ResponseEntity<ImagesIdsResponse> getImagesIds() {
+    public ResponseEntity<ImagesIdsResponse> getImagesIds() { //refactor/remove
         var imagesIds = imageService.getImagesIds();
         return ResponseEntity.ok(new ImagesIdsResponse(imagesIds));
     }
