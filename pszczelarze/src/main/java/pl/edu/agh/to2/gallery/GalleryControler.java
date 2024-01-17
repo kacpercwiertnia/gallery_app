@@ -19,7 +19,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 import pl.edu.agh.to2.Main;
-import pl.edu.agh.to2.directories.ZipHandler;
 import pl.edu.agh.to2.image.OriginalImageController;
 import pl.edu.agh.to2.rest.StatusNotOkException;
 import pl.edu.agh.to2.rest.image.ImageService;
@@ -27,14 +26,11 @@ import pl.edu.agh.to2.rest.thumbnails.ThumbnailService;
 import pl.edu.agh.to2.thumbnails.CashedThumbnails;
 import pl.edu.agh.to2.thumbnails.ThumbnailSize;
 
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,7 +52,6 @@ public class GalleryControler {
     private String placeholderUrl = "placeholder_small.gif";
     private final Thread scheduler;
     private int thumbnailsPerRow = 10;
-    private ZipHandler zipHandler;
 
     public GalleryControler() {
         this.scheduler = new PollingScheduler(this);
@@ -65,7 +60,6 @@ public class GalleryControler {
         this.selectedThumbnails = thumbnails.getThumbnails(ThumbnailSize.SMALL);
         this.waitingIds = thumbnails.getWaitingImagesIds(ThumbnailSize.SMALL);
         this.uploadedImages = new ArrayList<>();
-        this.zipHandler = new ZipHandler();
     }
 
     @FXML
@@ -77,26 +71,16 @@ public class GalleryControler {
 
     @FXML
     public void uploadImageButtonClicked(ActionEvent actionEvent) {
-        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Images and zip", "*.jpeg", "*.jpg", "*.png", "*.zip");
         FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(filter);
         File file = fileChooser.showOpenDialog(null);
 
-        if(zipHandler.checkIfZip(file)){
-            try {
-                Map<String, List<String>> imageMap = zipHandler.getImagesFromZip(file);
-            } catch (IOException e) {
-                Main.log.info("Failed to load zip: " + e.getMessage());
-            }
-        }else if(file != null) {
-            try {
-                byte[] fileContent = Files.readAllBytes(file.toPath());
-                String stringImage = Base64.getEncoder().encodeToString(fileContent);
-                uploadedImages.add(stringImage);
-                uploadImagesLabel.setText("Wybrane obrazki: " + uploadedImages.size());
-            } catch (IOException e) {
-                Main.log.info(e.getMessage());
-            }
+        try {
+            byte[] fileContent = Files.readAllBytes(file.toPath());
+            String stringImage = Base64.getEncoder().encodeToString(fileContent);
+            uploadedImages.add(stringImage);
+            uploadImagesLabel.setText("Wybrane obrazki: " + uploadedImages.size());
+        } catch (IOException e) {
+            Main.log.info(e.getMessage());
         }
     }
 
