@@ -6,9 +6,7 @@ import pl.edu.agh.to2.rest.AbstractService;
 import pl.edu.agh.to2.rest.StatusNotOkException;
 import pl.edu.agh.to2.rest.thumbnails.requests.ThumbnailsRequest;
 
-import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
-import java.util.List;
 
 public class ThumbnailService extends AbstractService {
     public static JSONArray getThumbnailsRequest(String path, String size, int page, int offset) throws StatusNotOkException{ //TODO: change size to enum

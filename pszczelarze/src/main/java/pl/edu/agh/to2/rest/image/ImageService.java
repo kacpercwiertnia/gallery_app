@@ -1,15 +1,12 @@
 package pl.edu.agh.to2.rest.image;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import pl.edu.agh.to2.rest.AbstractService;
 import pl.edu.agh.to2.rest.StatusNotOkException;
 import pl.edu.agh.to2.rest.image.requests.GetImageRequest;
 import pl.edu.agh.to2.rest.image.requests.GetTotalImagesInDirectoryRequest;
-import pl.edu.agh.to2.rest.image.requests.ImageIdsRequest;
 import pl.edu.agh.to2.rest.image.requests.PostImageRequest;
 
-import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.List;
 
