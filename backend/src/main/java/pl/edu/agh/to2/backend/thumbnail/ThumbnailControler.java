@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.edu.agh.to2.backend.rest.ThumbnailsPagedRequest;
+import pl.edu.agh.to2.backend.rest.ThumbnailsRequest;
 import pl.edu.agh.to2.backend.rest.ThumbnailsResponse;
 
 @RestController
@@ -18,7 +18,7 @@ public class ThumbnailControler {
     }
 
     @PostMapping(path = "/paged")
-    public ResponseEntity<ThumbnailsResponse> getThumbnails(@RequestBody ThumbnailsPagedRequest request){
+    public ResponseEntity<ThumbnailsResponse> getThumbnails(@RequestBody ThumbnailsRequest request){
         try{
             var thumbnails = thumbnailService.getThumbnailsBySizeForCurrentDirectory(request.path()
                     , request.size(), request.page(), request.offset());
