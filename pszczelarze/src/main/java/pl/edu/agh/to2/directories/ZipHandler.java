@@ -39,7 +39,7 @@ public class ZipHandler {
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
 
-                if(entry.getName().startsWith(zipName) && !entry.isDirectory() && isImage(entry.getName())){
+                if(validateEntry(entry, zipName)){
                     var entryPath = getEntryPath(entry);
                     imageMap.computeIfAbsent(entryPath, k -> new ArrayList<>()).add(readEntryData(zipped, entry));
                 }
@@ -47,6 +47,14 @@ public class ZipHandler {
         }
 
         return imageMap;
+    }
+
+    private boolean validateEntry(ZipEntry entry, String zipName){
+        return !entry.isDirectory()
+                && (
+                (entry.getName().startsWith(zipName)
+                        || !entry.getName().contains("/"))
+                        && isImage(entry.getName()));
     }
 
     private String getZipName(File zipFile){

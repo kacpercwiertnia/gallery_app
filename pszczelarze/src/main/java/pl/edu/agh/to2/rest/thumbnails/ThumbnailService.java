@@ -6,7 +6,6 @@ import pl.edu.agh.to2.rest.AbstractService;
 import pl.edu.agh.to2.rest.StatusNotOkException;
 import pl.edu.agh.to2.rest.thumbnails.requests.ThumbnailsRequest;
 
-import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 import java.util.List;
 
