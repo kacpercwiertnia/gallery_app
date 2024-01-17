@@ -109,6 +109,7 @@ public class GalleryControler {
         currentPage = 0;
         currentImages.clear();
         currentImagesOnPage = 0;
+        freePlaceholders.clear();
         refreshThumbnailsLists();
         //TODO: change onSize event
     }
