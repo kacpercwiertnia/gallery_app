@@ -1,11 +1,7 @@
 package pl.edu.agh.to2.backend.image;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+import pl.edu.agh.to2.backend.directory.Directory;
 import pl.edu.agh.to2.backend.thumbnail.Thumbnail;
 
 import java.util.ArrayList;
@@ -21,6 +17,9 @@ public class Image {
     private byte[] source;
     @OneToMany
     private List<Thumbnail> Thumbnails;
+
+    @ManyToOne
+    private Directory directory;
 
     public Image(byte[] source) {
         this.source = source;
@@ -40,6 +39,14 @@ public class Image {
 
     public List<Thumbnail> getThumbnails() {
         return Thumbnails;
+    }
+
+    public Directory getDirectory(){
+        return directory;
+    }
+
+    public void setDirectory(Directory directory){
+        this.directory = directory;
     }
     
     public void addThumbnails(Thumbnail thumbnail) {

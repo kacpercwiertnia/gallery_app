@@ -1,8 +1,11 @@
 package pl.edu.agh.to2.backend.thumbnail;
 
 import jakarta.transaction.Transactional;
+import jdk.swing.interop.SwingInterOpUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import pl.edu.agh.to2.backend.image.ImageRepository;
 import pl.edu.agh.to2.backend.queue.QueueRepository;
@@ -55,12 +58,30 @@ public class ThumbnailService {
         queueRepository.delete(queue);
     }
 
-    public List<ThumbnailDto> getThumbnailsByIdsAndSize(List<Integer> imagesIds, ThumbnailSize size){
+    public List<ThumbnailDto> getThumbnailsByIdsAndSize(List<Integer> imagesIds, ThumbnailSize size){ //TODO: remove
         List<Thumbnail> thumbnails = thumbnailRepository.findThumbnailsByIdAndSize(imagesIds, size);
         return thumbnails
                 .stream()
-                .map(thumbnail -> new ThumbnailDto(thumbnail.getImage().getImageId(), Base64.getEncoder().encodeToString(thumbnail.getSource()),
+                .map(thumbnail -> new ThumbnailDto(thumbnail.getImage().getImageId(), encodeToString(thumbnail.getSource()),
                         thumbnail.getIsSuccesful()))
                 .toList();
+    }
+
+    //TODO: totalCount
+    public List<ThumbnailDto> getThumbnailsBySizeForCurrentDirectory(String path, ThumbnailSize size, int page, int offset){
+        System.out.println(path);
+        System.out.println(size);
+        System.out.println(page);
+        System.out.println(offset);
+        List<Thumbnail> thumbnails = thumbnailRepository.findAllByImage_Directory_PathAndSize(path, size, PageRequest.of(page, offset));
+        System.out.println(thumbnails);
+        return thumbnails
+                .stream()
+                .map(thumbnail -> new ThumbnailDto(thumbnail.getImage().getImageId(), encodeToString(thumbnail.getSource()), thumbnail.getIsSuccesful()))
+                .toList();
+    }
+
+    private String encodeToString(byte[] blob){ //TODO: Maybe make it a static method
+        return Base64.getEncoder().encodeToString(blob);
     }
 }
