@@ -85,6 +85,12 @@ public class GalleryControler {
         if(zipHandler.checkIfZip(file)){
             try {
                 Map<String, List<String>> imageMap = zipHandler.getImagesFromZip(file);
+
+                for (Map.Entry<String, List<String>> entry : imageMap.entrySet()) {
+                    uploadedImages.addAll(entry.getValue());
+                }
+
+                uploadImagesLabel.setText("Wybrane obrazki: " + uploadedImages.size());
             } catch (IOException e) {
                 Main.log.info("Failed to load zip: " + e.getMessage());
             }
