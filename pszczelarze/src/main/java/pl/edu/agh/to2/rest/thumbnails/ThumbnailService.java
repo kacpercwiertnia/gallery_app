@@ -11,9 +11,9 @@ import java.net.http.HttpResponse;
 import java.util.List;
 
 public class ThumbnailService extends AbstractService {
-    public static JSONArray getThumbnailsRequest(List<Integer> ids, String size) throws StatusNotOkException{
+    public static JSONArray getThumbnailsRequest(String path, String size, int page, int offset) throws StatusNotOkException{ //TODO: change size to enum
         try{
-            var request = new ThumbnailsRequest(ids, size).build();
+            var request = new ThumbnailsRequest(path, size, page, offset).build();
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());
             checkIfOk(response);
 

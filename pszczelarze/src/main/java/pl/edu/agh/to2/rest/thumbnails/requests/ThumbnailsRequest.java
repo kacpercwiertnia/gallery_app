@@ -1,29 +1,42 @@
 package pl.edu.agh.to2.rest.thumbnails.requests;
 
+import pl.edu.agh.to2.rest.BodyBuilder;
+
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.util.List;
 
 public class ThumbnailsRequest {
-    private final List<Integer> ids;
+    private final String path;
     private final String size;
-    public ThumbnailsRequest(List<Integer> ids, String size){
-        this.ids = ids;
+    private final int page;
+    private final int offset;
+    public ThumbnailsRequest(String path, String size, int page, int offset){
+        this.path = path;
         this.size = size;
+        this.page = page;
+        this.offset = offset;
     }
 
     public HttpRequest build(){
-        StringBuilder body = new StringBuilder("{\"imagesIds\":[");
-        for(Integer id: ids){
-            body.append(id.toString()).append(",");
-        }
-        body.deleteCharAt(body.length()-1);
-        body.append("],\"size\":\"").append(size).append("\"}");
+        var bodyBuilder = new BodyBuilder();
+
+        var body = bodyBuilder
+                .openBody()
+                .addFirstKeyWithValue("path", path)
+                .addNextKey("size", size)
+                .addNextKey("page", page)
+                .addNextKey("offset", offset)
+                .closeAndGetBody();
 
         return HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/thumbnails"))
+                .uri(URI.create("http://localhost:8080/thumbnails/paged"))
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(body.toString()))
+                .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
+    }
+
+    private String addQuotes(String text){
+        return "\"" + text + "\"";
     }
 }

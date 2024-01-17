@@ -59,6 +59,10 @@ public class ImageService {
                 .toList();
     }
 
+    public Integer getTotalInDirectory(String path){
+        return imageRepository.countAllByDirectory_Path(path);
+    }
+
     public String getImageById(int id) throws IllegalArgumentException {
         Optional<Image> image = imageRepository.findById(id);
         if (image.isPresent()) {

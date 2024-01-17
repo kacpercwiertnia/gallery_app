@@ -5,7 +5,7 @@ import java.net.http.HttpRequest;
 import java.util.List;
 
 public class PostImageRequest {
-    private List<String> images;
+    private final List<String> images;
 
     public PostImageRequest(List<String> images){
         this.images = images;
