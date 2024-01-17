@@ -29,9 +29,17 @@ public class ImageService {
 
     public void addNewImages(String[] encodedImages) throws IllegalArgumentException {
         List<Image> checkedImages = new ArrayList<>();
-        var dir = new Directory("/", "/"); //TODO: to be removed
+        var dir = directoryRepository.findAll();
+        Directory actualDir;
+        if (dir.size() == 0){
+            actualDir = new Directory("/", "/");
+        }
+        else{
+            actualDir = dir.get(0);
+        }
+        //TODO: to be removed
 
-        directoryRepository.save(dir);
+        directoryRepository.save(actualDir);
         for (String encodedImage : encodedImages) {
             byte[] byteImage = Base64.getDecoder().decode(encodedImage);
             try (InputStream is = new BufferedInputStream(new ByteArrayInputStream(byteImage))) {
@@ -41,7 +49,7 @@ public class ImageService {
                 }
 
                 var img = new Image(byteImage);
-                img.setDirectory(dir);
+                img.setDirectory(actualDir);
                 checkedImages.add(img);
             } catch (IOException e) {
                 System.out.println(e.getMessage());

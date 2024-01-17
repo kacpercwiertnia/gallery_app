@@ -22,7 +22,6 @@ import pl.edu.agh.to2.image.OriginalImageController;
 import pl.edu.agh.to2.rest.StatusNotOkException;
 import pl.edu.agh.to2.rest.image.ImageService;
 import pl.edu.agh.to2.rest.thumbnails.ThumbnailService;
-import pl.edu.agh.to2.thumbnails.CashedThumbnails;
 import pl.edu.agh.to2.thumbnails.ThumbnailSize;
 
 import java.io.BufferedInputStream;
@@ -35,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 
 public class GalleryControler {
     @FXML
@@ -44,8 +42,6 @@ public class GalleryControler {
     private ComboBox<ThumbnailSize> sizeSelect;
     @FXML
     private Label uploadImagesLabel;
-    private final CashedThumbnails thumbnails;
-    private Map<Integer, ImageView> selectedThumbnails;
     private final List<String> uploadedImages;
     private String placeholderUrl = "placeholder_small.gif";
     private final Thread scheduler;
@@ -58,13 +54,11 @@ public class GalleryControler {
     private final List<ImageView> freePlaceholders;
 
     private final List<Integer> currentImages;
-    private int imagesOnPage = 0;
+    private int currentImagesOnPage = 0;
 
     public GalleryControler() {
         this.scheduler = new PollingScheduler(this);
         this.scheduler.start();
-        this.thumbnails = new CashedThumbnails();
-        this.selectedThumbnails = thumbnails.getThumbnails(ThumbnailSize.SMALL);
         this.uploadedImages = new ArrayList<>();
         this.freePlaceholders = new ArrayList<>();
         this.currentImages = new ArrayList<>();
@@ -96,7 +90,6 @@ public class GalleryControler {
     public void thumbnailSizeChanged(ActionEvent event) {
         thumbnailGrid.getChildren().clear();
         thumbnailGrid.getStyleClass().clear();
-        this.selectedThumbnails = thumbnails.getThumbnails(sizeSelect.getValue());
         thumbnailGrid.getStyleClass().add(sizeSelect.getValue().toString());
 
         switch (sizeSelect.getValue()) {
@@ -114,8 +107,10 @@ public class GalleryControler {
             }
         }
         currentPage = 0;
+        currentImages.clear();
+        currentImagesOnPage = 0;
         refreshThumbnailsLists();
-        redrawThumbnailGrid();
+        //TODO: change onSize event
     }
 
     @FXML
@@ -135,38 +130,18 @@ public class GalleryControler {
         uploadImagesLabel.setText("");
     }
 
-//    public void refreshIdsLists() {
-//        try {
-//            var imagesIds = ImageService.getImageIds();
-//
-//            for (int i = 0; i < imagesIds.length(); i++) {
-//                int id = imagesIds.getInt(i);
-//
-//                if (!selectedThumbnails.containsKey(id) && !waitingIds.contains(id)) {
-//                    waitingIds.add(id);
-//                    File file2 = new File("src/main/resources/images/" + placeholderUrl);
-//                    Image image = new Image(file2.toURI().toString());
-//                    ImageView imageView = new ImageView(image);
-//                    selectedThumbnails.put(id, imageView);
-//                    thumbnailGrid.add(selectedThumbnails.get(id), (selectedThumbnails.size() - 1) % thumbnailsPerRow, (selectedThumbnails.size() - 1) / thumbnailsPerRow);
-//                }
-//            }
-//        } catch (StatusNotOkException ex) {
-//            Main.log.warning("Request for refreshing id list failed. Reason: " + ex.getMessage());
-//        }
-//
-//    }
-
     public void refreshThumbnailsLists() {
         try {
             var total = ImageService.getTotalImagesInDirectory(currentPath);
 
-            if(total != imagesOnPage){
-                createPlaceholders(imagesOnPage, total);
-                imagesOnPage = total;
+            var totalForPage = getTotalForCurrentPage(total);
+
+            if(totalForPage != currentImagesOnPage){
+                createPlaceholders(currentImagesOnPage, totalForPage); //assumption that totalForPage is always smaller than currentImagesOnPage
+                currentImagesOnPage = totalForPage;
             }
 
-            if (currentImages.size() == imagesOnPage){ return; }
+            if (currentImages.size() == currentImagesOnPage){ return; }
 
             var thumbnails = ThumbnailService.getThumbnailsRequest(currentPath,
                     sizeSelect.getValue().toString(),
@@ -208,6 +183,11 @@ public class GalleryControler {
 
     }
 
+    private int getTotalForCurrentPage(int total){
+        var pageSize = getPageSize();
+        return Math.min(total-pageSize*currentPage, getPageSize());
+    }
+
     private void createPlaceholders(int start, int end){
         for(int i = start; i<end; i++){
             File file = new File("src/main/resources/images/" + placeholderUrl);
@@ -216,14 +196,6 @@ public class GalleryControler {
             freePlaceholders.add(imageView);
             thumbnailGrid.add(imageView, i % thumbnailsPerRow, i / thumbnailsPerRow);
         }
-    }
-
-    private void redrawThumbnailGrid() {
-        selectedThumbnails.forEach((K, V) -> {
-            if (!thumbnailGrid.getChildren().contains(V)) {
-                thumbnailGrid.getChildren().add(V);
-            }
-        });
     }
 
     private void seeOriginalImage(MouseEvent event, int imageId) {
