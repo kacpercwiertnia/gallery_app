@@ -29,4 +29,8 @@
             </GridPane>
         </ScrollPane>
     </center>
+    <bottom>
+        <HBox fx:id="dirTree" styleClass="dirBar">
+        </HBox>
+    </bottom>
 </BorderPane>

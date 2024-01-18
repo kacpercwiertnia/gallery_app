@@ -5,7 +5,7 @@
     -fx-background-color: #434548;
 }
 .navbar{
-    -fx-alignment: "center";
+    -fx-alignment: center;
     -fx-padding: 0 0 8 0;
     -fx-spacing: 8;
 }
@@ -50,4 +50,12 @@
 .SMALL{
     -fx-padding: 8 3.09 0 3.09;
     -fx-hgap: 3.09;
+}
+.dirBar{
+    -fx-alignment: center;
+    -fx-padding: 8 0 0 0;
+    -fx-spacing: 8;
+}
+.dir{
+    -fx-alignment: center;
 }
