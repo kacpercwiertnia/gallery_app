@@ -104,11 +104,9 @@ public class GalleryControler {
             } else {
                 byte[] fileContent = Files.readAllBytes(file.toPath());
                 String stringImage = Base64.getEncoder().encodeToString(fileContent);
-                if (uploadedImages.containsKey(currentPath)) {
-                    uploadedImages.get(currentPath).add(stringImage);
-                } else {
-                    uploadedImages.put(currentPath, List.of(stringImage));
-                }
+                List<String> images = uploadedImages.getOrDefault(currentPath, new ArrayList<>());
+                images.add(stringImage);
+                uploadedImages.put(currentPath,images);
             }
             uploadImagesLabel.setText("Wybrane obrazki: " + uploadedImages.values().stream().mapToInt(List::size).sum());
             setPageChangeComponents();
