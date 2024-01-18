@@ -101,9 +101,10 @@ public class GalleryControler {
 
                 for (Map.Entry<String, List<String>> entry : imageMap.entrySet()) {
                     String fullPath = currentPath;
-                    if(!entry.getKey().isEmpty())
-                       fullPath = currentPath.equals("/") ? "/" + entry.getKey() : currentPath + "/" + entry.getKey();
-
+                    if(!entry.getKey().isEmpty()){
+                        fullPath = currentPath.equals("/") ? "/" + entry.getKey() : currentPath + "/" + entry.getKey();
+                        fullPath =fullPath.replaceAll(" ","_");
+                    }
                     if (uploadedImages.containsKey(fullPath)) {
                         uploadedImages.get(fullPath).addAll(entry.getValue());
                     } else {
