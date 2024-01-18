@@ -55,11 +55,9 @@ public class GalleryControler {
     private int thumbnailsPerRow = 10;
 
     //paging stuff
-    private int currentPage = 0; //TODO: logic
+    private int currentPage = 0;
     private String currentPath = "/";
-
     private final List<ImageView> freePlaceholders;
-
     private final List<Integer> currentImages;
     private int currentImagesOnPage = 0;
 
@@ -167,7 +165,7 @@ public class GalleryControler {
             if (currentImages.size() == currentImagesOnPage){ return; }
 
             var thumbnails = ThumbnailService.getThumbnailsRequest(currentPath,
-                    sizeSelect.getValue().toString(),
+                    sizeSelect.getValue(),
                     currentPage,
                     getPageSize());
 
@@ -182,28 +180,24 @@ public class GalleryControler {
                 String image = thumbnail.getString("basedImage");
                 boolean status = thumbnail.getBoolean("isCorrect");
 
-
                 if (status) {
                     InputStream is = Base64.getDecoder().wrap(new ByteArrayInputStream(image.getBytes()));
-                    ImageView imageView = freePlaceholders.get(0);
+                    ImageView imageView = freePlaceholders.remove(0);
                     imageView.setImage(new Image(is));
                     imageView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                         seeOriginalImage(event, id);
                     });
-                    freePlaceholders.remove(0);
                     currentImages.add(id);
                 } else {
                     File file2 = new File("src/main/resources/images/failed_" + sizeSelect.getValue() + ".png");
-                    ImageView placeholder = freePlaceholders.get(0);
+                    ImageView placeholder = freePlaceholders.remove(0);
                     placeholder.setImage(new Image(file2.toURI().toString()));
-                    freePlaceholders.remove(0);
                     currentImages.add(id);
                 }
             }
         } catch (StatusNotOkException ex) {
             Main.log.warning("Request for refreshing thumbnail list failed. Reason: " + ex.getMessage());
         }
-
     }
 
     private int getTotalForCurrentPage(int total){

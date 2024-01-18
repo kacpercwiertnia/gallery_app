@@ -10,5 +10,5 @@ public record ThumbnailsRequest(String path, ThumbnailSize size, Integer page, I
         Objects.requireNonNull(size, "size not given");
         Objects.requireNonNull(page, "page not given");
         Objects.requireNonNull(offset, "page size not given");
-    }//TODO: constraints if decided to leave it as post
+    }
 }

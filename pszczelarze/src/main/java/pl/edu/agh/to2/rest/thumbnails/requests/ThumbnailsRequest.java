@@ -30,13 +30,9 @@ public class ThumbnailsRequest {
                 .closeAndGetBody();
 
         return HttpRequest.newBuilder()
-                .uri(URI.create("http://localhost:8080/thumbnails/paged"))
+                .uri(URI.create("http://localhost:8080/thumbnails"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
-    }
-
-    private String addQuotes(String text){
-        return "\"" + text + "\"";
     }
 }

@@ -17,7 +17,7 @@ public class ThumbnailControler {
         this.thumbnailService = thumbnailService;
     }
 
-    @PostMapping(path = "/paged")
+    @PostMapping
     public ResponseEntity<ThumbnailsResponse> getThumbnails(@RequestBody ThumbnailsRequest request){
         try{
             var thumbnails = thumbnailService.getThumbnailsBySizeForCurrentDirectory(request.path()
