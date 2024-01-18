@@ -47,7 +47,7 @@ public class ImageService {
 
         for (Map.Entry<String, List<String>> entry:images.entrySet()){
             dir = directoryRepository.findByPath(entry.getKey());
-            String path = entry.getKey().equals("/") ? "/" : StringUtils.chop(entry.getKey());
+            String path = entry.getKey();
             String parent = getParent(path);
 
             if (dir == null){

@@ -40,7 +40,7 @@ public class ZipHandler {
                 ZipEntry entry = entries.nextElement();
 
                 if(validateEntry(entry, zipName)){
-                    var entryPath = getEntryPath(entry);
+                    var entryPath = getZipName(zipFile) + getEntryPath(entry);
                     imageMap.computeIfAbsent(entryPath, k -> new ArrayList<>()).add(readEntryData(zipped, entry));
                 }
             }

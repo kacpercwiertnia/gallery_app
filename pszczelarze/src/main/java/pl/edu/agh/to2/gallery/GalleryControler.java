@@ -88,21 +88,20 @@ public class GalleryControler {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(filter);
         File file = fileChooser.showOpenDialog(null);
-
+        if (file == null) return;
         try {
             if (zipHandler.checkIfZip(file)) {
                 Map<String, List<String>> imageMap = zipHandler.getImagesFromZip(file);
 
                 for (Map.Entry<String, List<String>> entry : imageMap.entrySet()) {
-
-                    String fullPath = currentPath.equals("/") ? "/" + entry.getKey() : currentPath+"/"+entry.getKey();
+                    String fullPath = currentPath.equals("/") ? "/" + entry.getKey() : currentPath + "/" + entry.getKey();
                     if (uploadedImages.containsKey(fullPath)) {
                         uploadedImages.get(fullPath).addAll(entry.getValue());
                     } else {
                         uploadedImages.put(fullPath, entry.getValue());
                     }
                 }
-            } else if (file != null) {
+            } else {
                 byte[] fileContent = Files.readAllBytes(file.toPath());
                 String stringImage = Base64.getEncoder().encodeToString(fileContent);
                 if (uploadedImages.containsKey(currentPath)) {
@@ -111,7 +110,7 @@ public class GalleryControler {
                     uploadedImages.put(currentPath, List.of(stringImage));
                 }
             }
-            uploadImagesLabel.setText("Wybrane obrazki: " + uploadedImages.size());
+            uploadImagesLabel.setText("Wybrane obrazki: " + uploadedImages.values().stream().mapToInt(List::size).sum());
             setPageChangeComponents();
         } catch (IOException e) {
             Main.log.warning("Failed to load images: " + e.getMessage());
@@ -149,17 +148,17 @@ public class GalleryControler {
     }
 
     @FXML
-    public void goToPrevPage(ActionEvent actionEvent){
+    public void goToPrevPage(ActionEvent actionEvent) {
 
-        currentPage-=1;
+        currentPage -= 1;
         setPageChangeComponents();
         clearImages();
         refreshThumbnailsLists();
     }
 
     @FXML
-    public void goToNextPage(ActionEvent actionEvent){
-        currentPage+=1;
+    public void goToNextPage(ActionEvent actionEvent) {
+        currentPage += 1;
         setPageChangeComponents();
         clearImages();
         refreshThumbnailsLists();
@@ -182,12 +181,14 @@ public class GalleryControler {
 
             var totalForPage = getTotalForCurrentPage(total);
 
-            if(totalForPage != currentImagesOnPage){
+            if (totalForPage != currentImagesOnPage) {
                 createPlaceholders(currentImagesOnPage, totalForPage); //assumption that totalForPage is always smaller than currentImagesOnPage
                 currentImagesOnPage = totalForPage;
             }
 
-            if (currentImages.size() == currentImagesOnPage){ return; }
+            if (currentImages.size() == currentImagesOnPage) {
+                return;
+            }
 
             var thumbnails = ThumbnailService.getThumbnailsRequest(currentPath,
                     sizeSelect.getValue(),
@@ -198,7 +199,7 @@ public class GalleryControler {
                 JSONObject thumbnail = thumbnails.getJSONObject(i);
                 int id = thumbnail.getInt("imageId");
 
-                if (currentImages.contains(id)){
+                if (currentImages.contains(id)) {
                     continue;
                 }
 
@@ -225,13 +226,13 @@ public class GalleryControler {
         }
     }
 
-    private int getTotalForCurrentPage(int total){
+    private int getTotalForCurrentPage(int total) {
         var pageSize = getPageSize();
-        return Math.min(total-pageSize*currentPage, getPageSize());
+        return Math.min(total - pageSize * currentPage, getPageSize());
     }
 
-    private void createPlaceholders(int start, int end){
-        for(int i = start; i<end; i++){
+    private void createPlaceholders(int start, int end) {
+        for (int i = start; i < end; i++) {
             File file = new File("src/main/resources/images/" + placeholderUrl);
             Image placeholderImage = new Image(file.toURI().toString());
             ImageView imageView = new ImageView(placeholderImage);
@@ -265,23 +266,23 @@ public class GalleryControler {
         }
     }
 
-    private boolean checkIfNextPageButtonVisible(){
-        try{
+    private boolean checkIfNextPageButtonVisible() {
+        try {
             var total = ImageService.getTotalImagesInDirectory(currentPath);
-            return total > (currentPage+1)*getPageSize();
-        }catch(StatusNotOkException ex){
+            return total > (currentPage + 1) * getPageSize();
+        } catch (StatusNotOkException ex) {
             Main.log.info(ex.getMessage());
             return false;
         }
     }
 
-    private void setPageChangeComponents(){
+    private void setPageChangeComponents() {
         nextPage.setVisible(checkIfNextPageButtonVisible());
         pageNumber.setText("Strona " + (currentPage + 1));
-        prevPage.setVisible(!(currentPage==0));
+        prevPage.setVisible(!(currentPage == 0));
     }
 
-    private void clearImages(){
+    private void clearImages() {
         currentImages.clear();
         currentImagesOnPage = 0;
         freePlaceholders.clear();
@@ -290,8 +291,8 @@ public class GalleryControler {
         thumbnailGrid.getStyleClass().add(sizeSelect.getValue().toString());
     }
 
-    private int getPageSize(){
-        return switch(sizeSelect.getValue()){
+    private int getPageSize() {
+        return switch (sizeSelect.getValue()) {
             case SMALL -> 100;
             case MEDIUM -> 16;
             case LARGE -> 9;
