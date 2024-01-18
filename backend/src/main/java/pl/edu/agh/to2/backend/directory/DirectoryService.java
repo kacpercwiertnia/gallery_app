@@ -17,8 +17,12 @@ public class DirectoryService {
     public DirectoryService(DirectoryRepository directoryRepository){
 
         this.directoryRepository = directoryRepository;
-        Directory dir = new Directory("/", null);
-        directoryRepository.save(dir);
+
+        Directory dir = directoryRepository.findByPath("/");
+        if (dir == null) {
+            dir = new Directory("/", null);
+            directoryRepository.save(dir);
+        }
     }
 
     public List<String> getSubdirectoriesByParent(String parent){
