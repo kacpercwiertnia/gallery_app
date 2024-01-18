@@ -199,6 +199,8 @@ public class GalleryControler {
                 return;
             }
 
+            setPageChangeComponents();
+
             var thumbnails = ThumbnailService.getThumbnailsRequest(currentPath,
                     sizeSelect.getValue(),
                     currentPage,
