@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.edu.agh.to2.backend.rest.ThumbnailsPagedRequest;
 import pl.edu.agh.to2.backend.rest.ThumbnailsRequest;
 import pl.edu.agh.to2.backend.rest.ThumbnailsResponse;
 
