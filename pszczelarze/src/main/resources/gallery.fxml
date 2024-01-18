@@ -18,6 +18,9 @@
             <Button text="Wyczyść kolejkę" onAction="#clearUploadedImages"/>
             <Label styleClass="select-label" text="Wybierz rozmiar miniatur: "/>
             <ComboBox fx:id="sizeSelect" onAction="#thumbnailSizeChanged"/>
+            <Button fx:id="prevPage" text="&lt;" onAction="#goToPrevPage"/>
+            <Label fx:id="pageNumber"/>
+            <Button fx:id="nextPage" text="&gt;" onAction="#goToNextPage"/>
         </HBox>
     </top>
     <center>

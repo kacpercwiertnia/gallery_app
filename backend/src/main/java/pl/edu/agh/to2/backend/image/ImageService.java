@@ -79,11 +79,8 @@ public class ImageService {
 
     }
 
-    public List<Integer> getImagesIds() {
-        return imageRepository.findAll()
-                .stream()
-                .map(Image::getImageId)
-                .toList();
+    public Integer getTotalInDirectory(String path){
+        return imageRepository.countAllByDirectory_Path(path);
     }
 
     public String getImageById(int id) throws IllegalArgumentException {

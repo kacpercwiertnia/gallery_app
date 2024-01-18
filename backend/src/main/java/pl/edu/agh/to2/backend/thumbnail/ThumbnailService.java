@@ -56,23 +56,9 @@ public class ThumbnailService {
         queueRepository.delete(queue);
     }
 
-    public List<ThumbnailDto> getThumbnailsByIdsAndSize(List<Integer> imagesIds, ThumbnailSize size){ //TODO: remove
-        List<Thumbnail> thumbnails = thumbnailRepository.findThumbnailsByIdAndSize(imagesIds, size);
-        return thumbnails
-                .stream()
-                .map(thumbnail -> new ThumbnailDto(thumbnail.getImage().getImageId(), encodeToString(thumbnail.getSource()),
-                        thumbnail.getIsSuccesful()))
-                .toList();
-    }
-
     //TODO: totalCount
     public List<ThumbnailDto> getThumbnailsBySizeForCurrentDirectory(String path, ThumbnailSize size, int page, int offset){
-        System.out.println(path);
-        System.out.println(size);
-        System.out.println(page);
-        System.out.println(offset);
         List<Thumbnail> thumbnails = thumbnailRepository.findAllByImage_Directory_PathAndSize(path, size, PageRequest.of(page, offset));
-        System.out.println(thumbnails);
         return thumbnails
                 .stream()
                 .map(thumbnail -> new ThumbnailDto(thumbnail.getImage().getImageId(), encodeToString(thumbnail.getSource()), thumbnail.getIsSuccesful()))

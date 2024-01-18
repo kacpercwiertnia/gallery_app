@@ -1,5 +1,6 @@
 package pl.edu.agh.to2.backend.image;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import pl.edu.agh.to2.backend.rest.ImagesIdsResponse;
 import pl.edu.agh.to2.backend.rest.OriginalImageReponse;
 import pl.edu.agh.to2.backend.rest.SendImagesRequest;
+import pl.edu.agh.to2.backend.rest.TotalInDirectoryResponse;
 
 @RestController
 @RequestMapping("/image")
@@ -30,12 +32,6 @@ public class ImageControler {
         return ResponseEntity.ok().body("Success");
     }
 
-    @GetMapping
-    public ResponseEntity<ImagesIdsResponse> getImagesIds() { //refactor/remove
-        var imagesIds = imageService.getImagesIds();
-        return ResponseEntity.ok(new ImagesIdsResponse(imagesIds));
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<OriginalImageReponse> getOriginalImage(@PathVariable int id) {
         try {
@@ -44,6 +40,12 @@ public class ImageControler {
         } catch (IllegalArgumentException exception) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping(path = "/total")
+    public ResponseEntity<TotalInDirectoryResponse> getTotalInDirectory(@RequestParam String path){
+        var total = imageService.getTotalInDirectory(path);
+        return ResponseEntity.ok(new TotalInDirectoryResponse(total));
     }
 }
 
