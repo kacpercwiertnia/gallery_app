@@ -8,7 +8,7 @@
             fx:controller="pl.edu.agh.to2.gallery.GalleryControler"
             styleClass="gallery-pane"
             stylesheets="styles/gallery.css"
-            prefHeight="800.0" prefWidth="800.0">
+            prefHeight="860.0" prefWidth="800.0">
     <top>
         <HBox styleClass="navbar">
             <Button text="Prześlij zdjęcia" onAction="#uploadImageButtonClicked"/>
@@ -18,19 +18,25 @@
             <Button text="Wyczyść kolejkę" onAction="#clearUploadedImages"/>
             <Label styleClass="select-label" text="Wybierz rozmiar miniatur: "/>
             <ComboBox fx:id="sizeSelect" onAction="#thumbnailSizeChanged"/>
-            <Button fx:id="prevPage" text="&lt;" onAction="#goToPrevPage"/>
-            <Label fx:id="pageNumber"/>
-            <Button fx:id="nextPage" text="&gt;" onAction="#goToNextPage"/>
         </HBox>
     </top>
     <center>
-        <ScrollPane>
+        <HBox styleClass="gallery">
             <GridPane fx:id="thumbnailGrid" vgap="5" styleClass="SMALL">
             </GridPane>
-        </ScrollPane>
+        </HBox>
     </center>
     <bottom>
-        <HBox fx:id="dirTree" styleClass="dirBar">
-        </HBox>
+        <VBox>
+            <HBox styleClass="paging">
+                <Button fx:id="prevPage" text="&lt;" onAction="#goToPrevPage"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="pageNumber"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="nextPage" text="&gt;" onAction="#goToNextPage"/>
+            </HBox>
+            <HBox fx:id="dirTree" styleClass="dirBar">
+            </HBox>
+        </VBox>
     </bottom>
 </BorderPane>

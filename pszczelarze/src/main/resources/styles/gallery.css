@@ -59,3 +59,13 @@
 .dir{
     -fx-alignment: center;
 }
+.paging{
+    -fx-padding: 8 0 8 0;
+    -fx-alignment: center;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #727272;
+}
+.gallery{
+    -fx-background-color: #282931;
+    -fx-background-radius: 10;
+}

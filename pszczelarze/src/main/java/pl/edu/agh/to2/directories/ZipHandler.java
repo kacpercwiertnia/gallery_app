@@ -40,7 +40,11 @@ public class ZipHandler {
                 ZipEntry entry = entries.nextElement();
 
                 if(validateEntry(entry, zipName)){
-                    var entryPath = getZipName(zipFile) + getEntryPath(entry);
+                    var entryPath = "";
+
+                    if(entry.getName().contains("/"))
+                        entryPath = getEntryPath(entry);
+
                     imageMap.computeIfAbsent(entryPath, k -> new ArrayList<>()).add(readEntryData(zipped, entry));
                 }
             }
@@ -66,7 +70,7 @@ public class ZipHandler {
 
     private String getEntryPath(ZipEntry entry){
         var entryName = entry.getName();
-        entryName = entryName.substring(0, entryName.lastIndexOf("/")+1);
+        entryName = entryName.substring(0, entryName.lastIndexOf("/"));
 
         return entryName;
     }

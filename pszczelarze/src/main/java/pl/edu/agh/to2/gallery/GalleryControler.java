@@ -25,7 +25,6 @@ import pl.edu.agh.to2.directories.ZipHandler;
 import pl.edu.agh.to2.image.OriginalImageController;
 import pl.edu.agh.to2.rest.StatusNotOkException;
 import pl.edu.agh.to2.rest.directories.DirectoryService;
-import pl.edu.agh.to2.rest.directories.responses.GetSubdirectoriesResponse;
 import pl.edu.agh.to2.rest.image.ImageService;
 import pl.edu.agh.to2.rest.thumbnails.ThumbnailService;
 import pl.edu.agh.to2.thumbnails.ThumbnailSize;
@@ -101,7 +100,10 @@ public class GalleryControler {
                 Map<String, List<String>> imageMap = zipHandler.getImagesFromZip(file);
 
                 for (Map.Entry<String, List<String>> entry : imageMap.entrySet()) {
-                    String fullPath = currentPath.equals("/") ? "/" + entry.getKey() : currentPath + "/" + entry.getKey();
+                    String fullPath = currentPath;
+                    if(!entry.getKey().isEmpty())
+                       fullPath = currentPath.equals("/") ? "/" + entry.getKey() : currentPath + "/" + entry.getKey();
+
                     if (uploadedImages.containsKey(fullPath)) {
                         uploadedImages.get(fullPath).addAll(entry.getValue());
                     } else {
@@ -308,7 +310,6 @@ public class GalleryControler {
     private void buildDirectoryTree(){
         var subdirectories = DirectoryService.getSubdirectories(currentPath);
         dirTree.getChildren().clear();
-        subdirectories.forEach(System.out::println);
 
         var parent = currentPath.substring(0, currentPath.lastIndexOf("/")+1);
 
