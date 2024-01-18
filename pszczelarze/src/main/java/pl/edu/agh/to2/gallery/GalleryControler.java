@@ -19,6 +19,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONObject;
 import pl.edu.agh.to2.Main;
+import pl.edu.agh.to2.directories.ZipHandler;
 import pl.edu.agh.to2.image.OriginalImageController;
 import pl.edu.agh.to2.rest.StatusNotOkException;
 import pl.edu.agh.to2.rest.image.ImageService;
@@ -34,7 +35,9 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GalleryControler {
     @FXML
@@ -49,10 +52,11 @@ public class GalleryControler {
     private Button nextPage;
     @FXML
     private Label pageNumber;
-    private final List<String> uploadedImages;
+    private final Map<String, List<String>> uploadedImages;
     private String placeholderUrl = "placeholder_small.gif";
     private final Thread scheduler;
     private int thumbnailsPerRow = 10;
+    private final ZipHandler zipHandler;
 
     //paging stuff
     private int currentPage = 0;
@@ -64,9 +68,10 @@ public class GalleryControler {
     public GalleryControler() {
         this.scheduler = new PollingScheduler(this);
         this.scheduler.start();
-        this.uploadedImages = new ArrayList<>();
+        this.uploadedImages = new HashMap<>();
         this.freePlaceholders = new ArrayList<>();
         this.currentImages = new ArrayList<>();
+        this.zipHandler = new ZipHandler();
     }
 
     @FXML
@@ -79,17 +84,37 @@ public class GalleryControler {
 
     @FXML
     public void uploadImageButtonClicked(ActionEvent actionEvent) {
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Images and zip", "*.jpeg", "*.jpg", "*.png", "*.zip");
         FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(filter);
         File file = fileChooser.showOpenDialog(null);
 
         try {
-            byte[] fileContent = Files.readAllBytes(file.toPath());
-            String stringImage = Base64.getEncoder().encodeToString(fileContent);
-            uploadedImages.add(stringImage);
+            if (zipHandler.checkIfZip(file)) {
+                Map<String, List<String>> imageMap = zipHandler.getImagesFromZip(file);
+
+                for (Map.Entry<String, List<String>> entry : imageMap.entrySet()) {
+
+                    String fullPath = currentPath.equals("/") ? "/" + entry.getKey() : currentPath+"/"+entry.getKey();
+                    if (uploadedImages.containsKey(fullPath)) {
+                        uploadedImages.get(fullPath).addAll(entry.getValue());
+                    } else {
+                        uploadedImages.put(fullPath, entry.getValue());
+                    }
+                }
+            } else if (file != null) {
+                byte[] fileContent = Files.readAllBytes(file.toPath());
+                String stringImage = Base64.getEncoder().encodeToString(fileContent);
+                if (uploadedImages.containsKey(currentPath)) {
+                    uploadedImages.get(currentPath).add(stringImage);
+                } else {
+                    uploadedImages.put(currentPath, List.of(stringImage));
+                }
+            }
             uploadImagesLabel.setText("Wybrane obrazki: " + uploadedImages.size());
             setPageChangeComponents();
         } catch (IOException e) {
-            Main.log.info(e.getMessage());
+            Main.log.warning("Failed to load images: " + e.getMessage());
         }
     }
 

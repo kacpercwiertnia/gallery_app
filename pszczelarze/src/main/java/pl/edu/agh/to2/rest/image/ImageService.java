@@ -9,6 +9,7 @@ import pl.edu.agh.to2.rest.image.requests.PostImageRequest;
 
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Map;
 
 public class ImageService extends AbstractService {
     public static String getImage (int id) throws StatusNotOkException, RuntimeException{
@@ -23,7 +24,7 @@ public class ImageService extends AbstractService {
         }
     }
 
-    public static void postImage(List<String> images) throws StatusNotOkException{
+    public static void postImage(Map<String,List<String>> images) throws StatusNotOkException{
         var request = new PostImageRequest(images).build();
         try{
             var response = client.send(request, HttpResponse.BodyHandlers.ofString());

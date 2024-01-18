@@ -1,6 +1,12 @@
 package pl.edu.agh.to2.backend.directory;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Table;
+import jakarta.persistence.Index;
+import jakarta.persistence.Id;
+
+
 
 @Entity
 @Table(indexes = @Index(columnList = "path", unique = true))
