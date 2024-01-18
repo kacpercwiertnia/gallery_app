@@ -15,6 +15,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.json.JSONObject;
@@ -22,6 +24,8 @@ import pl.edu.agh.to2.Main;
 import pl.edu.agh.to2.directories.ZipHandler;
 import pl.edu.agh.to2.image.OriginalImageController;
 import pl.edu.agh.to2.rest.StatusNotOkException;
+import pl.edu.agh.to2.rest.directories.DirectoryService;
+import pl.edu.agh.to2.rest.directories.responses.GetSubdirectoriesResponse;
 import pl.edu.agh.to2.rest.image.ImageService;
 import pl.edu.agh.to2.rest.thumbnails.ThumbnailService;
 import pl.edu.agh.to2.thumbnails.ThumbnailSize;
@@ -53,6 +57,8 @@ public class GalleryControler {
     @FXML
     private Label pageNumber;
     private final Map<String, List<String>> uploadedImages;
+    @FXML
+    private HBox dirTree;
     private String placeholderUrl = "placeholder_small.gif";
     private final Thread scheduler;
     private int thumbnailsPerRow = 10;
@@ -80,6 +86,7 @@ public class GalleryControler {
         sizeSelect.setItems(thumbnailSizes);
         sizeSelect.setValue(ThumbnailSize.SMALL);
         setPageChangeComponents();
+        buildDirectoryTree();
     }
 
     @FXML
@@ -166,6 +173,7 @@ public class GalleryControler {
         if (uploadedImages.isEmpty()) return;
         try {
             ImageService.postImage(uploadedImages);
+            buildDirectoryTree();
         } catch (StatusNotOkException ex) {
             Main.log.warning("Request for posting an image failed. Reason: " + ex.getMessage());
         }
@@ -295,5 +303,57 @@ public class GalleryControler {
             case MEDIUM -> 16;
             case LARGE -> 9;
         };
+    }
+
+    private void buildDirectoryTree(){
+        var subdirectories = DirectoryService.getSubdirectories(currentPath);
+        dirTree.getChildren().clear();
+        subdirectories.forEach(System.out::println);
+
+        var parent = currentPath.substring(0, currentPath.lastIndexOf("/")+1);
+
+        if(!currentPath.equals("/")){
+            if(parent.equals("/"))
+                dirTree.getChildren().add(buildDirectory(parent, true));
+            else
+                dirTree.getChildren().add(buildDirectory(parent.substring(0, parent.length()-1), true));
+        }
+
+        subdirectories.forEach(subdirectory -> {
+            dirTree.getChildren().add(buildDirectory(subdirectory, false));
+        });
+    }
+
+    private VBox buildDirectory(String subdirectoryPath, boolean isPrev){
+        VBox dir = new VBox();
+        dir.getStyleClass().add("dir");
+        dir.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> handleDirectoryEnter(event, subdirectoryPath));
+
+        ImageView imageView = new ImageView();
+        imageView.getStyleClass().add("dirImage");
+
+        File file = new File("src/main/resources/images/directory.png");
+        Image image = new Image(file.toURI().toString());
+
+        var subdirectoryName = "..";
+
+        if(!isPrev)
+            subdirectoryName = subdirectoryPath.substring(subdirectoryPath.lastIndexOf('/'));
+
+        Label label = new Label(subdirectoryName);
+
+        imageView.setImage(image);
+        dir.getChildren().addAll(imageView, label);
+
+        return dir;
+    }
+
+    private void handleDirectoryEnter(MouseEvent event, String directoryPath){
+        currentPath = directoryPath;
+        currentPage = 0;
+        clearImages();
+        refreshThumbnailsLists();
+        setPageChangeComponents();
+        buildDirectoryTree();
     }
 }
