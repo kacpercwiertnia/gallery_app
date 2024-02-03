@@ -21,6 +21,6 @@ public class PollingScheduler extends Thread{
                 Platform.runLater(galleryControler::refreshThumbnailsLists);
             }
         };
-        timer.scheduleAtFixedRate(task, 0,3000);
+        timer.scheduleAtFixedRate(task, 0,500);
     }
 }
